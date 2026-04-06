@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="manifest" href="manifest.json">
+<script>
+/* 기존 서비스워커 캐시 강제 삭제 */
+(function(){
+  if(!('caches' in window)) return;
+  caches.keys().then(function(keys){
+    keys.forEach(function(k){ caches.delete(k); });
+  });
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(function(regs){
+      regs.forEach(function(reg){
+        reg.update();
+      });
+    });
+  }
+})();
+</script>
+<meta name="theme-color" content="#8c1a32">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>빼빼한의원 1회 체험 이벤트</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ────────────── 기본 ────────────── */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{background:#f0ecee;font-family:'Noto Sans KR',sans-serif;}
+body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
+@media (orientation:landscape){body{zoom:1.0;-moz-transform:scale(1.0);}}
+.app{min-height:100vh;max-width:1100px;margin:0 auto;display:flex;flex-direction:column;padding-bottom:120px;}
+
+/* ────────────── 헤더 ────────────── */
+.header{
+  background:linear-gradient(135deg,#fce8ed 0%,#f8d0da 100%);
+  padding:18px 24px 14px;
+  position:relative;overflow:hidden;
+}
+.header::before{content:'';position:absolute;width:360px;height:360px;border-radius:50%;background:rgba(140,26,50,0.03);top:-160px;right:-80px;}
+
+.header-row1{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+.header-left .clinic-nm{font-size:10px;letter-spacing:.45em;color:#b03050;font-weight:300;margin-bottom:4px;}
+.header-left .main-title{font-family:'Noto Serif KR',serif;font-size:26px;font-weight:900;color:#5a1028;letter-spacing:-.01em;line-height:1.2;}
+.header-left .sub-title{font-size:10px;font-weight:300;color:#c04060;letter-spacing:.16em;margin-top:3px;}
+
+/* 벚꽃 */
+.blossom{position:absolute;top:0;right:0;opacity:.75;pointer-events:none;}
+
+/* 환자 정보 박스 */
+.patient-box{
+  flex-shrink:0;z-index:2;position:relative;background:rgba(140,26,50,.06);border-radius:12px;
+  padding:10px 14px;display:flex;flex-direction:column;gap:7px;min-width:230px;
+}
+.p-row{display:flex;align-items:center;gap:8px;}
+.p-label{font-size:10px;color:#8c1a32;letter-spacing:.06em;width:52px;flex-shrink:0;}
+.p-inp{
+  flex:1;background:rgba(255,255,255,.7);border:1px solid #e0b0bc;
+  border-radius:6px;padding:5px 9px;font-family:'Noto Sans KR',sans-serif;
+  font-size:12px;font-weight:500;color:#5a1028;outline:none;
+  transition:background .15s,border-color .15s;
+}
+.p-inp::placeholder{color:#c08090;font-weight:300;}
+.p-inp:focus{background:#fff;border-color:#b03050;}
+.p-inp[type="date"]::-webkit-calendar-picker-indicator{filter:opacity(.45);}
+
+/* 요약 바 */
+.summary-bar{
+  margin-top:12px;background:rgba(140,26,50,.05);border-radius:10px;border:1px solid #e0b0bc;
+  padding:9px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.s-left{font-size:11.5px;color:#8a5060;font-weight:300;line-height:1.7;}
+.s-left strong{color:#5a1028;}
+.s-right{text-align:right;}
+.s-rlabel{font-size:9px;color:#9a6070;letter-spacing:.08em;margin-bottom:1px;}
+.s-total{font-family:'Noto Serif KR',serif;font-size:26px;font-weight:700;color:#5a1028;}
+.s-total span{font-size:11px;font-weight:400;}
+
+/* 안내 배너 */
+.notice-banner{
+  background:#fff8f9;border-bottom:1px solid #f0d0d8;
+  padding:8px 24px;font-size:11px;color:#8c1a32;font-weight:600;
+  display:flex;align-items:center;gap:6px;
+}
+
+/* ────────────── 콘텐츠 ────────────── */
+.content{padding:14px 14px 0;display:flex;flex-direction:column;gap:14px;}
+
+/* ────────────── 섹션 래퍼 ────────────── */
+.sec-wrap{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 14px rgba(140,26,50,.08);}
+
+/* 섹션 타이틀 바 */
+.sec-title{display:flex;align-items:center;padding:10px 18px;gap:10px;}
+.pink-sec .sec-title{background:#8c1a32;}
+.gold-sec  .sec-title{background:#7a6218;}
+.teal-sec  .sec-title{background:#1a6050;}
+.sec-title-text{font-family:'Noto Serif KR',serif;font-size:16px;font-weight:700;letter-spacing:.22em;color:#fff;}
+.sec-title-en{margin-left:auto;font-size:9px;font-weight:300;letter-spacing:.1em;color:rgba(255,255,255,.5);}
+
+/* 섹션 본문: 2컬럼 */
+.sec-body{display:grid;grid-template-columns:1fr 1fr;border-top:none;}
+
+/* ── 왼쪽: 체험가 ── */
+.trial-col{border-right:1px solid #f0e8ec;}
+.teal-sec .trial-col{border-right:1px solid #d0eee6;}
+.gold-sec  .trial-col{border-right:1px solid #ede8c0;}
+.col-badge{
+  padding:6px 16px;font-size:9.5px;font-weight:600;
+  letter-spacing:.1em;color:#fff;
+}
+.pink-sec .col-badge{background:rgba(140,26,50,.75);}
+.gold-sec  .col-badge{background:rgba(122,98,24,.75);}
+.teal-sec  .col-badge{background:rgba(26,96,80,.75);}
+.col-head{
+  display:grid;padding:5px 14px;
+  font-size:9px;font-weight:500;letter-spacing:.07em;color:#fff;
+}
+.trial-col .col-head{grid-template-columns:1fr 100px 90px;}
+.pink-sec .col-head{background:rgba(140,26,50,.62);}
+.gold-sec  .col-head{background:rgba(122,98,24,.62);}
+.teal-sec  .col-head{background:rgba(26,96,80,.62);}
+.col-head span{text-align:center;}
+.col-head span:first-child{text-align:left;}
+
+/* 아이템 행 */
+.item{
+  display:grid;align-items:center;
+  padding:0 14px 0 10px;min-height:50px;
+  border-bottom:1px solid;cursor:pointer;
+  transition:background .13s;user-select:none;
+}
+.trial-col .item{grid-template-columns:38px 1fr 100px 90px;}
+.pink-sec .item{background:#fff0f4;border-color:#f5ccd8;}
+.gold-sec  .item{background:#fffae6;border-color:#edd898;}
+.teal-sec  .item{background:#e8fff8;border-color:#9ae0cc;}
+.item:last-child{border-bottom:none;}
+.pink-sec .item.checked{background:#fce8ed;}
+.gold-sec  .item.checked{background:#fdf5d0;}
+.teal-sec  .item.checked{background:#d8f5ec;}
+
+/* 체크박스 */
+.cb{width:26px;height:26px;border-radius:7px;border:2px solid;display:flex;align-items:center;justify-content:center;transition:all .13s;flex-shrink:0;}
+.pink-sec .cb{border-color:#d47585;}
+.gold-sec  .cb{border-color:#b09040;}
+.teal-sec  .cb{border-color:#3a9070;}
+.pink-sec .item.checked .cb{background:#8c1a32;border-color:#8c1a32;}
+.gold-sec  .item.checked .cb{background:#7a6218;border-color:#7a6218;}
+.teal-sec  .item.checked .cb{background:#1a6050;border-color:#1a6050;}
+.pink-sec .pkg-item.checked .cb{background:#8c1a32;border-color:#8c1a32;}
+.gold-sec  .pkg-item.checked .cb{background:#7a6218;border-color:#7a6218;}
+.teal-sec  .pkg-item.checked .cb{background:#1a6050;border-color:#1a6050;}
+.cb-svg{display:none;width:13px;height:13px;}
+.item.checked .cb-svg, .pkg-item.checked .cb-svg{display:block;}
+
+.item-name{font-size:15px;font-weight:700;line-height:1.25;}
+.item-disc{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;display:inline;margin-left:6px;vertical-align:middle;}
+.pink-sec .item-disc{background:#fce8ed;color:#8c1a32;}
+.gold-sec .item-disc{background:#fdf5d0;color:#7a6218;}
+.teal-sec .item-disc{background:#d0f5ec;color:#1a6050;}
+.item-sub{font-size:11.5px;font-weight:500;color:#7a6870;margin-top:1px;}
+.pink-sec .item-name{color:#5a0820;}
+.gold-sec  .item-name{color:#3a2800;}
+.teal-sec  .item-name{color:#022818;}
+
+.pr-event{font-family:'Noto Serif KR',serif;font-size:17px;font-weight:700;text-align:center;line-height:1;}
+.pr-unit{font-size:9.5px;font-weight:400;}
+.pink-sec .pr-event{color:#b00028;}
+.gold-sec  .pr-event{color:#7a5000;}
+.teal-sec  .pr-event{color:#006040;}
+.pr-orig{font-size:12px;font-weight:400;color:#b09098;text-decoration:line-through;text-align:center;}
+
+/* ── 오른쪽: 패키지 ── */
+.pkg-col{background:#fffcfd;}
+.gold-sec  .pkg-col{background:#fffef5;}
+.teal-sec  .pkg-col{background:#f8fffd;}
+.pkg-badge{
+  padding:6px 16px;font-size:9.5px;font-weight:600;letter-spacing:.1em;color:#fff;
+  display:flex;align-items:center;gap:6px;
+}
+.pink-sec .pkg-badge{background:rgba(140,26,50,.75);}
+.gold-sec  .pkg-badge{background:rgba(122,98,24,.75);}
+.teal-sec  .pkg-badge{background:rgba(26,96,80,.75);}
+
+/* 패키지 아이템 */
+.pkg-item{
+  display:grid;grid-template-columns:38px 1fr auto;
+  align-items:center;padding:0 14px 0 10px;min-height:50px;
+  border-bottom:1px solid;cursor:pointer;
+  transition:background .13s;user-select:none;gap:8px;
+}
+.pink-sec .pkg-item{background:#fffcfd;border-color:#f5e0e6;}
+.gold-sec  .pkg-item{background:#fffef5;border-color:#ede8b0;}
+.teal-sec  .pkg-item{background:#f8fffd;border-color:#b8ead8;}
+.pkg-item:last-child{border-bottom:none;}
+.pink-sec .pkg-item.checked{background:#fce8ed;}
+.gold-sec  .pkg-item.checked{background:#fdf5d0;}
+.teal-sec  .pkg-item.checked{background:#d0f5ec;}
+
+.pkg-name{font-size:14px;font-weight:700;line-height:1.3;}
+.pkg-desc{font-size:11.5px;font-weight:500;margin-top:2px;}
+.pink-sec .pkg-name{color:#6a1028;}
+.gold-sec  .pkg-name{color:#4a3808;}
+.teal-sec  .pkg-name{color:#0c3828;}
+.pink-sec .pkg-desc{color:#c04060;}
+.gold-sec  .pkg-desc{color:#9a7010;}
+.teal-sec  .pkg-desc{color:#0a7050;}
+
+.pkg-price-wrap{text-align:right;flex-shrink:0;}
+.pkg-price{font-family:'Noto Serif KR',serif;font-size:16px;font-weight:700;white-space:nowrap;}
+.pink-sec .pkg-price{color:#c01038;}
+.gold-sec  .pkg-price{color:#9a7010;}
+.teal-sec  .pkg-price{color:#0a7050;}
+.pkg-tag{
+  display:inline-block;margin-top:3px;padding:2px 7px;border-radius:10px;
+  font-size:9px;font-weight:500;white-space:nowrap;
+}
+.pink-sec .pkg-tag{background:#fce8ed;color:#9a1028;}
+.gold-sec  .pkg-tag{background:#fdf5d0;color:#7a5010;}
+.teal-sec  .pkg-tag{background:#d0f5ec;color:#0a5038;}
+
+/* 강추 아이템 */
+.pkg-item.best{
+  background:linear-gradient(135deg,#fff8e8 0%,#fff3e0 100%)!important;
+  border-left:4px solid #e8a000!important;
+  border-bottom:2px solid #f0c040!important;
+}
+.pkg-item.best .pkg-name{color:#7a4500!important;font-weight:700!important;}
+.pkg-item.best .pkg-price{color:#c06000!important;}
+.best-badge{
+  display:inline-flex;align-items:center;gap:3px;
+  background:linear-gradient(135deg,#e8a000,#f5c000);
+  color:#fff;font-size:9.5px;font-weight:700;
+  padding:2px 9px;border-radius:10px;margin-top:3px;
+  letter-spacing:0.04em;
+  box-shadow:0 1px 4px rgba(200,120,0,0.35);
+}
+.pkg-item.best.checked{background:linear-gradient(135deg,#fde8c0 0%,#fdd890 100%)!important;}
+
+/* 인쇄 안내 배너 */
+#print-guide-bar{
+  display:none;position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:#8c1a32;color:#fff;
+  padding:12px 18px;
+  align-items:center;justify-content:space-between;gap:12px;
+  box-shadow:0 2px 12px rgba(0,0,0,.3);
+}
+#print-guide-bar .guide-text{font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;}
+#print-guide-bar .guide-sub{font-size:12px;font-weight:400;opacity:.85;margin-top:2px;}
+#print-guide-bar .guide-close{
+  background:rgba(255,255,255,.2);border:none;color:#fff;
+  border-radius:8px;padding:8px 16px;font-size:13px;
+  font-family:'Noto Sans KR',sans-serif;font-weight:600;cursor:pointer;white-space:nowrap;
+}
+
+/* 화면 인쇄 버튼 */
+#print-fab{
+  display:none;
+  position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+  z-index:2000;
+  background:linear-gradient(135deg,#8c1a32,#b03050);
+  color:#fff;border:none;border-radius:50px;
+  padding:20px 48px;
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:20px;font-weight:700;
+  box-shadow:0 6px 24px rgba(140,26,50,.5);
+  cursor:pointer;
+  letter-spacing:.04em;
+  white-space:nowrap;
+}
+
+@media print{
+  #print-guide-bar{display:none!important;}
+  #print-fab{display:none!important;}
+  body > *{ display:none!important; }
+  #print-area{ display:block!important; }
+  @page{ size:A4 portrait; margin:0; }
+  *{ -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
+}
+
+/* 인쇄 확인 오버레이 */
+.print-confirm-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(20,5,10,.75);
+  z-index:500;align-items:center;justify-content:center;
+}
+.print-confirm-box{
+  background:#fff;border-radius:20px;
+  padding:28px 28px 22px;width:320px;
+  box-shadow:0 20px 60px rgba(0,0,0,.3);
+  text-align:center;
+}
+.print-confirm-title{
+  font-family:'Noto Serif KR',serif;
+  font-size:17px;font-weight:700;color:#5a1028;margin-bottom:8px;
+}
+.print-confirm-desc{
+  font-size:12px;color:#9a7080;margin-bottom:22px;line-height:1.7;
+}
+.print-confirm-btn{
+  width:100%;height:52px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,#8c1a32,#b03050);
+  color:#fff;font-family:'Noto Sans KR',sans-serif;
+  font-size:16px;font-weight:700;cursor:pointer;
+  margin-bottom:10px;
+  box-shadow:0 4px 14px rgba(140,26,50,.35);
+}
+.print-confirm-cancel{
+  width:100%;height:42px;border-radius:10px;
+  border:1.5px solid #e0b0bc;background:#fff;
+  color:#9a4055;font-family:'Noto Sans KR',sans-serif;
+  font-size:13px;font-weight:600;cursor:pointer;
+}
+
+/* ────────────── 서명 카드 ────────────── */
+.sig-card{background:#fff;border-radius:14px;padding:14px 18px;box-shadow:0 2px 12px rgba(140,26,50,.08);}
+.sig-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.sig-title{font-family:'Noto Serif KR',serif;font-size:13px;font-weight:700;letter-spacing:.12em;color:#5a1028;}
+.sig-buttons{display:flex;gap:8px;}
+.sig-btn{height:34px;padding:0 14px;border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:opacity .15s;}
+.sig-btn:active{opacity:.8;}
+.sig-btn-clear{background:#f0e8ec;color:#8c1a32;}
+.sig-btn-save{background:#8c1a32;color:#fff;}
+.sig-desc{font-size:11px;color:#b08090;margin-bottom:10px;}
+.sig-canvas{width:100%;height:160px;border:1.5px dashed #d0b0bc;border-radius:10px;display:block;touch-action:none;background:#fffbfc;cursor:crosshair;}
+.sig-saved-wrap{text-align:center;padding:8px 0;}
+.sig-saved-label{font-size:11px;color:#1a6050;font-weight:600;margin-bottom:6px;}
+.sig-saved-img{max-width:100%;border:1px solid #e0d0d8;border-radius:8px;background:#fff;}
+
+/* ────────────── 안내 카드 ────────────── */
+.notice-card{background:#fff;border-radius:14px;padding:12px 18px;box-shadow:0 2px 10px rgba(140,26,50,.06);}
+.n-row{display:flex;align-items:flex-start;gap:6px;font-size:11px;color:#8a5060;line-height:1.65;font-weight:700;}
+.n-row+.n-row{margin-top:3px;}
+.n-dot{color:#c04060;flex-shrink:0;font-size:13px;}
+.n-row strong{font-weight:700;color:#8c1a32;}
+
+/* ────────────── 저장 기록 ────────────── */
+.history-wrap{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(74,48,80,.08);}
+.history-head{background:#4a3050;padding:9px 18px;display:flex;align-items:center;justify-content:space-between;}
+.history-head-title{font-family:'Noto Serif KR',serif;font-size:12px;font-weight:700;letter-spacing:.14em;color:#fff;}
+.history-cnt{font-size:10px;color:rgba(255,220,240,.6);}
+.history-list{max-height:200px;overflow-y:auto;}
+.history-empty{padding:16px 18px;font-size:12px;color:#b090a0;text-align:center;font-weight:300;}
+.h-row{display:flex;align-items:center;padding:10px 18px;border-bottom:1px solid #f0e8ec;gap:10px;cursor:pointer;transition:background .12s;}
+.h-row:last-child{border-bottom:none;}
+.h-row:hover{background:#fdf5f7;}
+.h-info{flex:1;}
+.h-name{font-size:13px;font-weight:600;color:#5a1828;}
+.h-meta{font-size:10.5px;color:#9a7080;margin-top:1px;}
+.h-total{font-family:'Noto Serif KR',serif;font-size:13px;font-weight:700;color:#8c1a32;white-space:nowrap;}
+.h-del{width:26px;height:26px;border-radius:6px;background:#fce8ed;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ────────────── 하단 바 ────────────── */
+.bottom-bar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:1100px;
+  background:#fff;border-top:1px solid #f0d0d8;
+  padding:10px 16px;display:flex;gap:9px;
+  box-shadow:0 -4px 20px rgba(140,26,50,.1);z-index:100;
+}
+.btn{height:48px;border-radius:12px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .15s,transform .1s;letter-spacing:.03em;}
+.btn:active{transform:scale(0.97);opacity:.88;}
+.btn-home{flex:0 0 60px;border:1.5px solid #e0b0bc;background:#fff;color:#9a4055;font-size:11px;}
+.btn-reset{flex:0 0 80px;border:1.5px solid #e0b0bc;background:#fff;color:#9a4055;}
+.btn-save{flex:1.2;border:none;background:linear-gradient(135deg,#4a3050 0%,#6a4880 100%);color:#fff;box-shadow:0 3px 12px rgba(74,48,80,.25);}
+.btn-print{flex:1.2;border:none;background:linear-gradient(135deg,#8c1a32 0%,#b03050 100%);color:#fff;box-shadow:0 3px 12px rgba(140,26,50,.28);}
+.btn-consent{flex:1;border:none;background:linear-gradient(135deg,#065f46,#0d9488);color:#fff;box-shadow:0 3px 12px rgba(13,148,136,.3);}
+
+/* ────────────── 토스트 ────────────── */
+.toast{
+  position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(8px);
+  background:#4a3050;color:#fff;padding:10px 22px;border-radius:24px;
+  font-size:12.5px;font-weight:500;opacity:0;transition:opacity .25s,transform .25s;
+  pointer-events:none;z-index:200;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* 터치 이벤트 보장 */
+.item, .pkg-item{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,0);cursor:pointer;}
+
+/* 인쇄: #print-area만 표시 */
+@media print{
+  @page{ size:A4 portrait; margin:0; }
+  *{ -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
+}
+
+/* ────────────── 인쇄 오버레이 ────────────── */
+#print-area{display:none;}
+.print-overlay{
+  display:none;position:fixed;inset:0;background:rgba(30,10,20,.6);
+  z-index:300;align-items:center;justify-content:center;
+}
+.print-overlay.open{display:flex;}
+.print-modal{
+  background:#fff;border-radius:20px;padding:28px 28px 22px;
+  width:340px;box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+.print-modal-title{
+  font-family:'Noto Serif KR',serif;font-size:17px;font-weight:700;
+  color:#5a1028;margin-bottom:6px;
+}
+.print-modal-desc{font-size:11.5px;color:#9a7080;margin-bottom:20px;line-height:1.6;}
+.print-options{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+.print-opt-btn{
+  height:52px;border-radius:12px;border:none;cursor:pointer;
+  display:flex;align-items:center;gap:12px;padding:0 18px;
+  font-family:'Noto Sans KR',sans-serif;font-size:13.5px;font-weight:700;
+  transition:opacity .15s,transform .1s;text-align:left;
+}
+.print-opt-btn:active{transform:scale(0.97);opacity:.88;}
+.print-opt-patient{background:linear-gradient(135deg,#8c1a32,#b03050);color:#fff;}
+.print-opt-full{background:linear-gradient(135deg,#4a3050,#6a4880);color:#fff;}
+.print-opt-icon{width:28px;height:28px;background:rgba(255,255,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.print-opt-text{}
+.print-opt-label{font-size:13px;font-weight:700;}
+.print-opt-sub{font-size:10px;font-weight:400;opacity:.8;margin-top:1px;}
+.print-cancel{width:100%;height:40px;border-radius:10px;border:1.5px solid #e0b0bc;background:#fff;color:#9a4055;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ── 헤더 ── -->
+<div class="header">
+  <div class="header-row1">
+    <div class="header-left">
+      <img src="logo-color.png" alt="빼빼한의원" style="height:40px;width:auto;display:block;margin-bottom:4px;">
+      <div class="main-title">1회 체험 이벤트</div>
+      <div class="sub-title">Special Experience Event</div>
+    </div>
+
+    <!-- 환자 정보 -->
+    <div class="patient-box">
+      <div class="p-row">
+        <span class="p-label">차트번호</span>
+        <input class="p-inp" id="inp-chart" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="예) 001234" maxlength="20">
+      </div>
+      <div class="p-row">
+        <span class="p-label">환자이름</span>
+        <input class="p-inp" id="inp-name" type="text" placeholder="이름 입력" maxlength="20">
+      </div>
+      <div class="p-row">
+        <span class="p-label">날 &nbsp; 짜</span>
+        <input class="p-inp" id="inp-date" type="date">
+      </div>
+    </div>
+  </div>
+
+  <!-- 요약 바 -->
+  <div class="summary-bar">
+    <div class="s-left">
+      선택된 항목 <strong id="cnt">0</strong>개 &nbsp;|&nbsp;
+      체험가 <strong id="trial-sum">0</strong>원 &nbsp;·&nbsp;
+      패키지 <strong id="pkg-sum">0</strong>원
+      &nbsp;|&nbsp; 부가세 <strong id="vat-sum" style="color:#ffd0a0;">0</strong>원 별도
+    </div>
+    <div class="s-right">
+      <div class="s-rlabel">선택 합계 (부가세 별도 포함)</div>
+      <div class="s-total" id="total">0 <span>원</span></div>
+    </div>
+  </div>
+
+  <!-- 벚꽃 -->
+  <svg class="blossom" width="95" height="105" viewBox="0 0 95 105">
+    <path d="M95 0 Q65 24 46 54 Q32 74 26 105" stroke="rgba(255,200,215,.55)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+    <path d="M46 54 Q29 42 13 36" stroke="rgba(255,200,215,.55)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+    <path d="M68 27 Q52 30 42 22" stroke="rgba(255,200,215,.45)" stroke-width="1" fill="none" stroke-linecap="round"/>
+    <g transform="translate(13,36)"><ellipse cx="0" cy="-6" rx="4.2" ry="6" fill="rgba(255,205,218,.78)" transform="rotate(0)"/><ellipse cx="0" cy="-6" rx="4.2" ry="6" fill="rgba(255,178,198,.78)" transform="rotate(72)"/><ellipse cx="0" cy="-6" rx="4.2" ry="6" fill="rgba(255,205,218,.78)" transform="rotate(144)"/><ellipse cx="0" cy="-6" rx="4.2" ry="6" fill="rgba(255,178,198,.78)" transform="rotate(216)"/><ellipse cx="0" cy="-6" rx="4.2" ry="6" fill="rgba(255,205,218,.78)" transform="rotate(288)"/><circle cx="0" cy="0" r="2.3" fill="rgba(255,148,172,.82)"/></g>
+    <g transform="translate(42,22)"><ellipse cx="0" cy="-5" rx="3.6" ry="5" fill="rgba(255,178,198,.78)" transform="rotate(0)"/><ellipse cx="0" cy="-5" rx="3.6" ry="5" fill="rgba(255,205,218,.78)" transform="rotate(72)"/><ellipse cx="0" cy="-5" rx="3.6" ry="5" fill="rgba(255,178,198,.78)" transform="rotate(144)"/><ellipse cx="0" cy="-5" rx="3.6" ry="5" fill="rgba(255,205,218,.78)" transform="rotate(216)"/><ellipse cx="0" cy="-5" rx="3.6" ry="5" fill="rgba(255,178,198,.78)" transform="rotate(288)"/><circle cx="0" cy="0" r="1.9" fill="rgba(255,148,172,.82)"/></g>
+    <g transform="translate(79,10)"><ellipse cx="0" cy="-6.5" rx="4.8" ry="6.5" fill="rgba(255,205,218,.8)" transform="rotate(0)"/><ellipse cx="0" cy="-6.5" rx="4.8" ry="6.5" fill="rgba(255,178,198,.8)" transform="rotate(72)"/><ellipse cx="0" cy="-6.5" rx="4.8" ry="6.5" fill="rgba(255,205,218,.8)" transform="rotate(144)"/><ellipse cx="0" cy="-6.5" rx="4.8" ry="6.5" fill="rgba(255,178,198,.8)" transform="rotate(216)"/><ellipse cx="0" cy="-6.5" rx="4.8" ry="6.5" fill="rgba(255,205,218,.8)" transform="rotate(288)"/><circle cx="0" cy="0" r="2.8" fill="rgba(255,148,172,.85)"/></g>
+    <ellipse cx="36" cy="72" rx="3.2" ry="4.8" fill="rgba(255,178,198,.68)" transform="rotate(10 36 72)"/>
+    <ellipse cx="60" cy="42" rx="3" ry="4.2" fill="rgba(255,205,218,.68)" transform="rotate(-7 60 42)"/>
+    <ellipse cx="28" cy="48" rx="5.5" ry="2.2" fill="rgba(155,215,145,.48)" transform="rotate(22 28 48)"/>
+  </svg>
+</div>
+
+<!-- 안내 배너 삭제 (하단 안내 카드로 통합) -->
+
+<!-- ── 콘텐츠 ── -->
+<div class="content">
+
+  <!-- ═══ 리프팅 ═══ -->
+  <div class="sec-wrap pink-sec">
+    <div class="sec-title">
+      <span class="sec-title-text">리 프 팅</span>
+      <span class="sec-title-en">LIFTING</span>
+    </div>
+    <div class="sec-body">
+      <!-- 체험가 -->
+      <div class="trial-col">
+        <div class="col-badge">1 회 &nbsp; 체 험 가</div>
+        <div class="col-head"><span>시술명</span><span>1회 체험가</span><span>정 가</span></div>
+        <div class="item" data-price="9900" data-kind="trial" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="item-name">슈링크유니버스 <span class="item-disc">82%</span></div><div class="item-sub">100샷</div></div>
+          <div class="pr-event">9,900<span class="pr-unit">원</span></div>
+          <div class="pr-orig">55,000원</div>
+        </div>
+        <div class="item" data-price="29700" data-kind="trial" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="item-name">슈링크유니버스 <span class="item-disc">82%</span></div><div class="item-sub">300샷</div></div>
+          <div class="pr-event">29,700<span class="pr-unit">원</span></div>
+          <div class="pr-orig">165,000원</div>
+        </div>
+        <div class="item" data-price="55000" data-kind="trial" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="item-name">온다 <span class="item-disc">67%</span></div>
+          <div class="pr-event">55,000<span class="pr-unit">원</span></div>
+          <div class="pr-orig">165,000원</div>
+        </div>
+        <div class="item" data-price="50000" data-kind="trial" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="item-name">이중턱 약침 <span class="item-disc">50%</span></div>
+          <div class="pr-event">50,000<span class="pr-unit">원</span></div>
+          <div class="pr-orig">100,000원</div>
+        </div>
+      </div>
+      <!-- 패키지 -->
+      <div class="pkg-col">
+        <div class="pkg-badge">✦ &nbsp;패 키 지 &nbsp; 프 로 그 램</div>
+        <div class="pkg-item" data-price="315000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">슈링크유니버스 3회</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">315,000원</div><div><span class="pkg-tag">30% 할인</span></div></div>
+        </div>
+        <div class="pkg-item" data-price="315000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">온다 3회</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">315,000원</div><div><span class="pkg-tag">30% 할인</span></div></div>
+        </div>
+        <div class="pkg-item" data-price="210000" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">이중턱 약침 3회</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">210,000원</div><div><span class="pkg-tag">30% 할인</span></div></div>
+        </div>
+        <div class="pkg-item" data-price="530000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">슈링크유니버스 + 온다 각 3회</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">530,000원</div><div><span class="pkg-tag">추가 10만원 할인</span></div></div>
+        </div>
+        <div class="pkg-item" data-price="475000" data-vat-fixed="26500" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">슈링크유니버스 + 이중턱 약침 각 3회</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">475,000원</div><div><span class="pkg-tag">추가 5만원 할인</span></div></div>
+        </div>
+        <div class="pkg-item" data-price="475000" data-vat-fixed="26500" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">온다 + 이중턱 약침 각 3회</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">475,000원</div><div><span class="pkg-tag">추가 5만원 할인</span></div></div>
+        </div>
+        <div class="pkg-item best" data-price="680000" data-vat-fixed="53000" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name" style="font-size:11px;white-space:nowrap;">슈링크유니버스 + 온다 + 이중턱 약침 각 3회</div><span class="best-badge">⭐ 강 추 프 로 그 램</span></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">680,000원</div><div><span class="pkg-tag">추가 10만원 할인</span>&nbsp;<span class="pkg-tag">이중턱 50% 적용</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 미백·탄력 ═══ -->
+  <div class="sec-wrap gold-sec">
+    <div class="sec-title">
+      <span class="sec-title-text">미 백 · 탄 력</span>
+      <span class="sec-title-en">BRIGHTENING &amp; FIRMING</span>
+    </div>
+    <div class="sec-body">
+      <!-- 체험가 -->
+      <div class="trial-col">
+        <div class="col-badge">1 회 &nbsp; 체 험 가</div>
+        <div class="col-head"><span>시술명</span><span>1회 체험가</span><span>정 가</span></div>
+        <div class="item" data-price="55000" data-kind="trial" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="item-name">GD토닝 <span class="item-disc">67%</span></div>
+          <div class="pr-event">55,000<span class="pr-unit">원</span></div>
+          <div class="pr-orig">165,000원</div>
+        </div>
+        <div class="item" data-price="55000" data-kind="trial" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="item-name">어븀부스터 CIELO <span class="item-disc">67%</span></div>
+          <div class="pr-event">55,000<span class="pr-unit">원</span></div>
+          <div class="pr-orig">165,000원</div>
+        </div>
+        <div class="item" data-price="132000" data-kind="trial" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="item-name">어븀부스터 RADIJU <span class="item-disc">47%</span></div>
+          <div class="pr-event">132,000<span class="pr-unit">원</span></div>
+          <div class="pr-orig">250,000원</div>
+        </div>
+        <div class="item" data-price="165000" data-kind="trial" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="item-name">어븀부스터 PLLA <span class="item-disc">45%</span></div>
+          <div class="pr-event">165,000<span class="pr-unit">원</span></div>
+          <div class="pr-orig">300,000원</div>
+        </div>
+        <div class="item" data-price="55000" data-kind="trial" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="item-name">동안약침 <span class="item-disc">63%</span></div>
+          <div class="pr-event">55,000<span class="pr-unit">원</span></div>
+          <div class="pr-orig">150,000원</div>
+        </div>
+      </div>
+      <!-- 패키지 -->
+      <div class="pkg-col">
+        <div class="pkg-badge">✦ &nbsp;패 키 지 &nbsp; 프 로 그 램</div>
+        <div class="pkg-item" data-price="420000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">GD토닝 4회</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">420,000원</div><span class="pkg-tag">30% 할인</span></div>
+        </div>
+        <div class="pkg-item" data-price="420000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">부스터 4회 C</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">420,000원</div><span class="pkg-tag">30% 할인</span></div>
+        </div>
+        <div class="pkg-item" data-price="800000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">부스터 4회 R</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">800,000원</div><span class="pkg-tag">20% 할인</span></div>
+        </div>
+        <div class="pkg-item" data-price="840000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">부스터 4회 P</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">840,000원</div><span class="pkg-tag">30% 할인</span></div>
+        </div>
+        <div class="pkg-item" data-price="420000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">동안약침 4회</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">420,000원</div><span class="pkg-tag">30% 할인</span></div>
+        </div>
+        <div class="pkg-item" data-price="740000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">GD토닝 + 부스터 4회 C</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">740,000원</div><span class="pkg-tag">추가 10만원 할인</span></div>
+        </div>
+        <div class="pkg-item" data-price="1120000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">GD토닝 + 부스터 4회 R</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">1,120,000원</div><span class="pkg-tag">추가 10만원 할인</span></div>
+        </div>
+        <div class="pkg-item" data-price="1160000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">GD토닝 + 부스터 4회 P</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">1,160,000원</div><span class="pkg-tag">추가 10만원 할인</span></div>
+        </div>
+        <div class="pkg-item" data-price="740000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">GD토닝 + 동안약침 4회</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">740,000원</div><span class="pkg-tag">추가 10만원 할인</span></div>
+        </div>
+        <div class="pkg-item" data-price="740000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">동안약침 + 부스터 4회 C</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">740,000원</div><span class="pkg-tag">추가 10만원 할인</span></div>
+        </div>
+        <div class="pkg-item" data-price="1120000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">동안약침 + 부스터 4회 R</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">1,120,000원</div><span class="pkg-tag">추가 10만원 할인</span></div>
+        </div>
+        <div class="pkg-item" data-price="1160000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">동안약침 + 부스터 4회 P</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">1,160,000원</div><span class="pkg-tag">추가 10만원 할인</span></div>
+        </div>
+        <div class="pkg-item best" data-price="1040000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">GD토닝 + 부스터 4회 C + 동안약침</div><span class="best-badge">⭐ 강 추 프 로 그 램</span></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">1,040,000원</div><span class="pkg-tag">동안약침 50% 할인</span></div>
+        </div>
+        <div class="pkg-item best" data-price="1420000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">GD토닝 + 부스터 4회 R + 동안약침</div><span class="best-badge">⭐ 강 추 프 로 그 램</span></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">1,420,000원</div><span class="pkg-tag">동안약침 50% 할인</span></div>
+        </div>
+        <div class="pkg-item best" data-price="1460000" data-vat="true" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">GD토닝 + 부스터 4회 P + 동안약침</div><span class="best-badge">⭐ 강 추 프 로 그 램</span></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">1,460,000원</div><span class="pkg-tag">동안약침 50% 할인</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 다이어트 ═══ -->
+  <div class="sec-wrap teal-sec">
+    <div class="sec-title">
+      <span class="sec-title-text">다 이 어 트</span>
+      <span class="sec-title-en">DIET</span>
+    </div>
+    <div class="sec-body">
+      <!-- 체험가 -->
+      <div class="trial-col">
+        <div class="col-badge">1 회 &nbsp; 체 험 가 &nbsp;<span style="font-size:8.5px;font-weight:300;opacity:.8;">(부가세 포함)</span></div>
+        <div class="col-head"><span>시술명</span><span>1회 체험가</span><span>정 가</span></div>
+        <div class="item" data-price="25000" data-kind="trial" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="item-name">다이어트 약침 <span class="item-disc">50%</span></div>
+          <div class="pr-event">25,000<span class="pr-unit">원</span></div>
+          <div class="pr-orig">50,000원</div>
+        </div>
+        <div class="item" data-price="50000" data-kind="trial" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="item-name">이중턱 약침 <span class="item-disc">50%</span></div>
+          <div class="pr-event">50,000<span class="pr-unit">원</span></div>
+          <div class="pr-orig">100,000원</div>
+        </div>
+        <div class="item" data-price="5000" data-kind="trial" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="item-name">빼빼환 <span class="item-disc">50%</span></div><div class="item-sub">2일분</div></div>
+          <div class="pr-event">5,000<span class="pr-unit">원</span></div>
+          <div class="pr-orig">10,000원</div>
+        </div>
+      </div>
+      <!-- 패키지 -->
+      <div class="pkg-col">
+        <div class="pkg-badge">✦ &nbsp;패 키 지 &nbsp; 프 로 그 램 &nbsp;<span style="font-size:8.5px;font-weight:300;opacity:.75;">(부가세 포함)</span></div>
+        <div class="pkg-item" data-price="125000" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">빼빼환 1개월</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">125,000원</div></div>
+        </div>
+        <div class="pkg-item" data-price="237500" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">빼빼환 2개월</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">237,500원</div></div>
+        </div>
+        <div class="pkg-item" data-price="350000" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">빼빼환 3개월</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">350,000원</div></div>
+        </div>
+        <div class="pkg-item" data-price="350000" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">다이어트 약침 10회</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">350,000원</div><span class="pkg-tag">30% 할인</span></div>
+        </div>
+        <div class="pkg-item" data-price="350000" data-kind="pkg" onclick="toggle(this)">
+          <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="pkg-name">이중턱 약침 5회</div></div>
+          <div class="pkg-price-wrap"><div class="pkg-price">350,000원</div><span class="pkg-tag">30% 할인</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 안내 -->
+  <div class="notice-card">
+    <div class="n-row"><span class="n-dot">✦</span><span>체험 프로그램은 부가세 포함. &nbsp;패키지 프로그램은 부가세 별도 가격입니다</span></div>
+    <div class="n-row"><span class="n-dot">✦</span><span>1회 체험 프로그램은 동일 시술에 한하여 1회만 적용됩니다</span></div>
+    <div class="n-row"><span class="n-dot">✦</span><span>패키지 시술권은 구매일로부터 1년 이내 사용을 권장합니다</span></div>
+    <div class="n-row"><span class="n-dot">✦</span><span>일반침 치료시 본인부담금 별도 발생합니다</span></div>
+    <div class="n-row"><span class="n-dot">✦</span><span>예약 및 문의 &nbsp;02-2038-2114</span></div>
+  </div>
+
+  <!-- 서명 -->
+  <div class="sig-card">
+    <div class="sig-head">
+      <div class="sig-title">환자 서명</div>
+      <div class="sig-buttons">
+        <button class="sig-btn sig-btn-clear" onclick="clearSig()">지우기</button>
+        <button class="sig-btn sig-btn-save" onclick="saveSig()">서명 저장</button>
+      </div>
+    </div>
+    <div class="sig-desc">아래 서명란에 손가락으로 서명해 주세요</div>
+    <canvas id="sig-canvas" class="sig-canvas"></canvas>
+    <div class="sig-saved-wrap" id="sig-saved-wrap" style="display:none;">
+      <div class="sig-saved-label">✅ 저장된 서명</div>
+      <img id="sig-saved-img" class="sig-saved-img">
+      <button class="sig-btn sig-btn-clear" onclick="clearSavedSig()" style="margin-top:8px;">서명 다시 받기</button>
+    </div>
+  </div>
+
+  <!-- 저장 기록 -->
+  <div class="history-wrap">
+    <div class="history-head">
+      <span class="history-head-title">저 장 기 록</span>
+      <span class="history-cnt" id="h-cnt">0건</span>
+    </div>
+    <div class="history-list" id="h-list">
+      <div class="history-empty">저장된 기록이 없습니다</div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<!-- 하단 바 -->
+<div class="bottom-bar">
+  <button class="btn btn-home" onclick="location.href='index.html'">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l5-5 5 5" stroke="#9a4055" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 5.5V12h7V5.5" stroke="#9a4055" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <button class="btn btn-reset" onclick="resetAll()">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5a4.5 4.5 0 1 1 1.3 3.2" stroke="#9a4055" stroke-width="1.5" stroke-linecap="round"/><polyline points="2,3.5 2,6.5 5,6.5" stroke="#9a4055" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    초기화
+  </button>
+  <button class="btn btn-save" onclick="saveRecord()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="white" stroke-width="1.4"/><rect x="5" y="2" width="6" height="4" rx=".5" fill="white"/><rect x="4" y="8" width="8" height="4" rx="1" stroke="white" stroke-width="1.2"/></svg>
+    저장하기
+  </button>
+  <button class="btn btn-print" onclick="openPrintModal()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="6" width="10" height="7" rx="1.5" stroke="white" stroke-width="1.4"/><rect x="5" y="2" width="6" height="5" rx="1" stroke="white" stroke-width="1.4"/><rect x="5" y="9" width="6" height="4" rx=".8" fill="white"/><circle cx="11.5" cy="8.5" r=".9" fill="white"/></svg>
+    인쇄하기
+  </button>
+  <button class="btn btn-consent" onclick="goConsent()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 14.5L5 12L2 9L4.5 6.5L9.5 11.5L7 14L2.5 14.5Z" stroke="white" stroke-width="1.3" stroke-linejoin="round"/><path d="M9.5 3.5L12.5 6.5" stroke="white" stroke-width="1.4" stroke-linecap="round"/><path d="M6.5 1.5L14.5 9.5" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="2 1.5"/></svg>
+    동의서
+  </button>
+</div>
+
+<!-- 인쇄 옵션 모달 -->
+<div class="print-overlay" id="print-overlay" onclick="closePrintModal(event)">
+  <div class="print-modal">
+    <div class="print-modal-title">인쇄 옵션 선택</div>
+    <div class="print-modal-desc">선택한 항목을 어떤 형식으로 인쇄하시겠습니까?</div>
+    <div class="print-options">
+      <button class="print-opt-btn print-opt-patient" onclick="doPrint('patient')">
+        <div class="print-opt-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="12" height="14" rx="2" stroke="white" stroke-width="1.4"/><line x1="5" y1="5" x2="11" y2="5" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="5" y1="8" x2="11" y2="8" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="5" y1="11" x2="8" y2="11" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+        <div class="print-opt-text">
+          <div class="print-opt-label">환자용 인쇄</div>
+          <div class="print-opt-sub">선택 항목 + 서명란 · 1장</div>
+        </div>
+      </button>
+      <button class="print-opt-btn print-opt-full" onclick="doPrint('full')">
+        <div class="print-opt-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="white" stroke-width="1.4"/><rect x="4" y="1" width="8" height="3" rx="1" stroke="white" stroke-width="1.2"/><rect x="4" y="10" width="5" height="3" rx=".8" fill="white"/><circle cx="12" cy="7" r="1" fill="white"/></svg></div>
+        <div class="print-opt-text">
+          <div class="print-opt-label">원내 공유용 인쇄</div>
+          <div class="print-opt-sub">전체 항목 + 선택 표시 · 1장</div>
+        </div>
+      </button>
+    </div>
+    <button class="print-cancel" onclick="document.getElementById('print-overlay').classList.remove('open')">취소</button>
+  </div>
+</div>
+
+<!-- 인쇄 전용 영역 (숨김) -->
+<!-- 인쇄 안내 배너 -->
+<div id="print-guide-bar">
+  <div>
+    <div class="guide-text">📄 우측 상단 ⋮ → 인쇄 → PDF로 저장</div>
+    <div class="guide-sub">인쇄 후 아래 닫기 버튼을 눌러 앱으로 돌아오세요</div>
+  </div>
+  <button class="guide-close" onclick="closePrintGuide()">✕ 닫기</button>
+</div>
+
+<!-- 인쇄 확인 오버레이 -->
+<div class="print-confirm-overlay" id="print-confirm-overlay">
+  <div class="print-confirm-box">
+    <div class="print-confirm-title">인쇄 / PDF 저장</div>
+    <div class="print-confirm-desc">
+      아래 버튼을 터치하면<br>인쇄 다이얼로그가 열립니다.<br>
+      <strong>PDF로 저장</strong>을 선택하세요.
+    </div>
+    <button class="print-confirm-btn" onclick="executePrint()">🖨️ &nbsp;인쇄 시작</button>
+    <button class="print-confirm-cancel" onclick="cancelPrint()">취소</button>
+  </div>
+</div>
+
+<div id="print-area"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ====================================================
+   빼빼한의원 체험이벤트 앱 - ES5 완전호환 (Android file://)
+   ==================================================== */
+
+// 전역 오류 캐치
+window.onerror = function(msg, src, line) {
+  document.getElementById('toast').textContent = 'JS오류: ' + msg + ' (line ' + line + ')';
+  document.getElementById('toast').classList.add('show');
+  return false;
+};
+
+window.onload = function() {
+  // 모든 항목에 고유 ID 자동 할당
+  try {
+    var items = document.querySelectorAll('.item, .pkg-item');
+    for (var idx = 0; idx < items.length; idx++) {
+      var item = items[idx];
+      if (!item.getAttribute('data-id')) {
+        var kind = item.getAttribute('data-kind') || 'item';
+        var price = item.getAttribute('data-price');
+        var id = kind + '_' + price + '_' + idx;
+        item.setAttribute('data-id', id);
+      }
+    }
+  } catch(e) {}
+
+  try { renderHistory(); } catch(e) {}
+  try { initSig(); } catch(e) {}
+
+  // 저장된 상태 복원
+  try { restoreSavedState(); } catch(e) {}
+
+  // Android PWA zoom 환경에서 onclick 좌표 어긋남 보완
+  document.addEventListener('touchend', function(e) {
+    if(window.penOn) return;
+    var t = e.target;
+    while(t && t !== document.body) {
+      if(t.classList && (t.classList.contains('item') || t.classList.contains('pkg-item'))) {
+        e.preventDefault();
+        toggle(t);
+        return;
+      }
+      t = t.parentElement;
+    }
+  }, {passive: false});
+
+  // 오늘 날짜 기본값
+  try {
+    var t = new Date();
+    var mm = ('0' + (t.getMonth() + 1)).slice(-2);
+    var dd = ('0' + t.getDate()).slice(-2);
+    document.getElementById('inp-date').value = t.getFullYear() + '-' + mm + '-' + dd;
+  } catch(e) {}
+};
+
+/* ── 체크 토글 ── */
+function toggle(el) {
+  if (el.classList.contains('checked')) {
+    el.classList.remove('checked');
+  } else {
+    el.classList.add('checked');
+  }
+  updateSummary();
+}
+
+/* ── 요약 업데이트 ── */
+function updateSummary() {
+  var all = document.querySelectorAll('.item.checked,.pkg-item.checked');
+  var trial = 0, pkg = 0, vat = 0;
+  for (var i = 0; i < all.length; i++) {
+    var el = all[i];
+    var p = parseInt(el.getAttribute('data-price'));
+    if (el.getAttribute('data-kind') === 'trial') trial += p; else pkg += p;
+    var vf = el.getAttribute('data-vat-fixed');
+    if (vf) {
+      vat += parseInt(vf);
+    } else if (el.getAttribute('data-vat') === 'true') {
+      vat += Math.round(p * 0.1);
+    }
+  }
+  document.getElementById('cnt').textContent = all.length;
+  document.getElementById('trial-sum').textContent = trial.toLocaleString();
+  document.getElementById('pkg-sum').textContent = pkg.toLocaleString();
+  document.getElementById('vat-sum').textContent = vat.toLocaleString();
+  document.getElementById('total').innerHTML = (trial + pkg + vat).toLocaleString() + ' <span>\uC6D0</span>';
+}
+
+/* ── 초기화 ── */
+function resetAll() {
+  var els = document.querySelectorAll('.item.checked,.pkg-item.checked');
+  for (var i = 0; i < els.length; i++) els[i].classList.remove('checked');
+  document.getElementById('inp-chart').value = '';
+  document.getElementById('inp-name').value = '';
+  var t = new Date();
+  var mm = ('0' + (t.getMonth() + 1)).slice(-2);
+  var dd = ('0' + t.getDate()).slice(-2);
+  document.getElementById('inp-date').value = t.getFullYear() + '-' + mm + '-' + dd;
+  
+  // 서명 초기화
+  try {
+    sigSavedData = null;
+    sigHasMark = false;
+    if (sigCanvas) {
+      var ctx = sigCanvas.getContext('2d');
+      ctx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+    }
+    // 서명 미리보기 숨기기
+    var sigSavedImg = document.getElementById('sig-saved-img');
+    if (sigSavedImg) sigSavedImg.src = '';
+    var sigPreview = document.getElementById('sig-preview');
+    if (sigPreview) sigPreview.style.display = 'none';
+    // 서명 캔버스 다시 표시
+    if (sigCanvas) sigCanvas.style.display = 'block';
+    // 서명 버튼 상태 초기화
+    var sigWrap = document.getElementById('sig-wrap');
+    if (sigWrap) sigWrap.style.display = 'block';
+  } catch(e) {
+    console.error('서명 초기화 오류:', e);
+  }
+  
+  // localStorage 저장 데이터도 삭제
+  try {
+    localStorage.removeItem('bbaebbae_print_state');
+  } catch(e) {}
+  
+  updateSummary();
+}
+
+/* ── localStorage ── */
+var STORE_KEY = 'bbaebbae_v3';
+function getAll() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); } catch(e) { return []; }
+}
+function setAll(a) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(a)); } catch(e) {
+    showToast('저장 실패: localStorage 사용 불가');
+  }
+}
+
+function getItemLabel(el) {
+  var n = el.querySelector('.item-name,.pkg-name');
+  return n ? n.textContent : '';
+}
+
+/* ── 저장 ── */
+function saveRecord() {
+  var name = document.getElementById('inp-name').value.trim();
+  var date = document.getElementById('inp-date').value;
+  var chart = document.getElementById('inp-chart').value.trim();
+  if (!name) { showToast('\ud658\uc790 \uc774\ub984\uc744 \uc785\ub825\ud574 \uc8fc\uc138\uc694'); return; }
+  if (!date) { showToast('\ub0a0\uc9dc\ub97c \uc785\ub825\ud574 \uc8fc\uc138\uc694'); return; }
+
+  var allEls = document.querySelectorAll('.item.checked,.pkg-item.checked');
+  var items = [];
+  var total = 0;
+  for (var i = 0; i < allEls.length; i++) {
+    var el = allEls[i];
+    var p = parseInt(el.getAttribute('data-price'));
+    total += p;
+    items.push({ label: getItemLabel(el), kind: el.getAttribute('data-kind'), price: p });
+  }
+
+  var rec = { id: Date.now(), chart: chart, name: name, date: date, items: items, total: total, sig: sigSavedData || null };
+  var all = getAll();
+  var idx = -1;
+  for (var i = 0; i < all.length; i++) {
+    if (all[i].name === name && all[i].date === date) { idx = i; break; }
+  }
+  if (idx >= 0) { all[idx] = rec; showToast('\uae30\ub85d\uc744 \uc5c5\ub370\uc774\ud2b8\ud588\uc2b5\ub2c8\ub2e4'); }
+  else { all.unshift(rec); showToast('\uc800\uc7a5 \uc644\ub8cc: ' + name + ' (' + date + ')'); }
+  setAll(all);
+  renderHistory();
+}
+
+/* ── 기록 불러오기 ── */
+function loadRecord(id) {
+  var all = getAll();
+  var rec = null;
+  for (var i = 0; i < all.length; i++) { if (all[i].id === id) { rec = all[i]; break; } }
+  if (!rec) return;
+
+  document.getElementById('inp-chart').value = rec.chart || '';
+  document.getElementById('inp-name').value = rec.name;
+  document.getElementById('inp-date').value = rec.date;
+
+  var els = document.querySelectorAll('.item.checked,.pkg-item.checked');
+  for (var i = 0; i < els.length; i++) els[i].classList.remove('checked');
+
+  for (var s = 0; s < rec.items.length; s++) {
+    var saved = rec.items[s];
+    var all2 = document.querySelectorAll('.item,.pkg-item');
+    for (var j = 0; j < all2.length; j++) {
+      var el = all2[j];
+      if (el.getAttribute('data-kind') === saved.kind &&
+          parseInt(el.getAttribute('data-price')) === saved.price &&
+          getItemLabel(el) === saved.label) {
+        el.classList.add('checked'); break;
+      }
+    }
+  }
+  updateSummary();
+  // 저장된 서명 복원
+  sigSavedData = rec.sig || null;
+  if (sigSavedData) {
+    var sImg = document.getElementById('sig-saved-img');
+    var sWrap = document.getElementById('sig-saved-wrap');
+    var sCanvas = document.getElementById('sig-canvas');
+    var sDesc = document.querySelector('.sig-desc');
+    var sSaveBtn = document.querySelector('.sig-btn-save');
+    if (sImg) sImg.src = sigSavedData;
+    if (sWrap) sWrap.style.display = 'block';
+    if (sCanvas) sCanvas.style.display = 'none';
+    if (sDesc) sDesc.style.display = 'none';
+    if (sSaveBtn) sSaveBtn.style.display = 'none';
+  } else {
+    // 서명 없는 기록이면 서명란 초기화
+    var sWrap = document.getElementById('sig-saved-wrap');
+    var sCanvas = document.getElementById('sig-canvas');
+    var sDesc = document.querySelector('.sig-desc');
+    var sSaveBtn = document.querySelector('.sig-btn-save');
+    if (sWrap) sWrap.style.display = 'none';
+    if (sCanvas) sCanvas.style.display = 'block';
+    if (sDesc) sDesc.style.display = 'block';
+    if (sSaveBtn) sSaveBtn.style.display = 'inline-flex';
+    sigHasMark = false;
+  }
+  window.scrollTo(0, 0);
+  showToast(rec.name + ' \uae30\ub85d\uc744 \ubd88\ub7ec\uc654\uc2b5\ub2c8\ub2e4');
+}
+
+/* ── 기록 삭제 ── */
+function delRecord(id, e) {
+  if (e && e.stopPropagation) e.stopPropagation();
+  var all = getAll();
+  var filtered = [];
+  for (var i = 0; i < all.length; i++) { if (all[i].id !== id) filtered.push(all[i]); }
+  setAll(filtered);
+  renderHistory();
+  showToast('\uc0ad\uc81c\ud588\uc2b5\ub2c8\ub2e4');
+}
+
+/* ── 기록 렌더링 ── */
+function renderHistory() {
+  var all = getAll();
+  document.getElementById('h-cnt').textContent = all.length + '\uac74';
+  var list = document.getElementById('h-list');
+  if (!all.length) {
+    list.innerHTML = '<div class="history-empty">\uc800\uc7a5\ub41c \uae30\ub85d\uc774 \uc5c6\uc2b5\ub2c8\ub2e4</div>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < all.length; i++) {
+    var r = all[i];
+    var ds = r.date.replace(/-/g, '.');
+    var labels = [];
+    for (var j = 0; j < r.items.length; j++) labels.push(r.items[j].label);
+    var its = labels.length ? labels.join(', ') : '\uc120\ud0dd \uc5c6\uc74c';
+    html += '<div class="h-row" onclick="loadRecord(' + r.id + ')">'
+      + '<div class="h-info">'
+      + '<div class="h-name">' + r.name + (r.chart ? ' \u00b7 ' + r.chart : '') + '</div>'
+      + '<div class="h-meta">' + ds + ' &nbsp;|&nbsp; ' + its + '</div>'
+      + '</div>'
+      + '<div class="h-total">' + r.total.toLocaleString() + '\uc6d0</div>'
+      + '<button class="h-del" onclick="delRecord(' + r.id + ',event)">'
+      + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none">'
+      + '<line x1="1.5" y1="1.5" x2="9.5" y2="9.5" stroke="#c04060" stroke-width="1.8" stroke-linecap="round"/>'
+      + '<line x1="9.5" y1="1.5" x2="1.5" y2="9.5" stroke="#c04060" stroke-width="1.8" stroke-linecap="round"/>'
+      + '</svg></button></div>';
+  }
+  list.innerHTML = html;
+}
+
+/* ── 토스트 ── */
+var _tt;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_tt);
+  _tt = setTimeout(function() { t.classList.remove('show'); }, 2400);
+}
+
+/* ── 서명 캔버스 ── */
+var sigCanvas, sigCtx, sigDrawing = false, sigHasMark = false;
+var sigSavedData = null; // 저장된 서명 데이터
+
+function initSig() {
+  sigCanvas = document.getElementById('sig-canvas');
+  if (!sigCanvas) return;
+
+  // 캔버스 실제 픽셀 크기 맞추기
+  var rect = sigCanvas.getBoundingClientRect();
+  sigCanvas.width = rect.width * window.devicePixelRatio;
+  sigCanvas.height = rect.height * window.devicePixelRatio;
+  sigCtx = sigCanvas.getContext('2d');
+  sigCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  sigCtx.strokeStyle = '#2a1020';
+  sigCtx.lineWidth = 2.5;
+  sigCtx.lineCap = 'round';
+  sigCtx.lineJoin = 'round';
+
+  // 터치 이벤트
+  sigCanvas.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    sigDrawing = true;
+    var t = e.touches[0];
+    var r = sigCanvas.getBoundingClientRect();
+    sigCtx.beginPath();
+    sigCtx.moveTo(t.clientX - r.left, t.clientY - r.top);
+  }, {passive: false});
+
+  sigCanvas.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+    if (!sigDrawing) return;
+    sigHasMark = true;
+    var t = e.touches[0];
+    var r = sigCanvas.getBoundingClientRect();
+    sigCtx.lineTo(t.clientX - r.left, t.clientY - r.top);
+    sigCtx.stroke();
+  }, {passive: false});
+
+  sigCanvas.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    sigDrawing = false;
+  }, {passive: false});
+
+  // 마우스 이벤트 (PC 테스트용)
+  sigCanvas.addEventListener('mousedown', function(e) {
+    sigDrawing = true;
+    var r = sigCanvas.getBoundingClientRect();
+    sigCtx.beginPath();
+    sigCtx.moveTo(e.clientX - r.left, e.clientY - r.top);
+  });
+  sigCanvas.addEventListener('mousemove', function(e) {
+    if (!sigDrawing) return;
+    sigHasMark = true;
+    var r = sigCanvas.getBoundingClientRect();
+    sigCtx.lineTo(e.clientX - r.left, e.clientY - r.top);
+    sigCtx.stroke();
+  });
+  sigCanvas.addEventListener('mouseup', function() { sigDrawing = false; });
+}
+
+function clearSig() {
+  if (!sigCtx) return;
+  sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+  sigHasMark = false;
+}
+
+function saveSig() {
+  if (!sigHasMark) { showToast('서명을 먼저 해주세요'); return; }
+  sigSavedData = sigCanvas.toDataURL('image/png');
+  document.getElementById('sig-saved-img').src = sigSavedData;
+  document.getElementById('sig-saved-wrap').style.display = 'block';
+  sigCanvas.style.display = 'none';
+  document.querySelector('.sig-desc').style.display = 'none';
+  document.querySelector('.sig-btn-save').style.display = 'none';
+  showToast('서명이 저장됐습니다');
+}
+
+function clearSavedSig() {
+  sigSavedData = null;
+  document.getElementById('sig-saved-wrap').style.display = 'none';
+  sigCanvas.style.display = 'block';
+  document.querySelector('.sig-desc').style.display = 'block';
+  document.querySelector('.sig-btn-save').style.display = 'inline-flex';
+  clearSig();
+}
+
+
+function openPrintModal() {
+  var checked = document.querySelectorAll('.item.checked,.pkg-item.checked');
+  if (!checked.length) { showToast('\uc120\ud0dd\ub41c \ud56d\ubaa9\uc774 \uc5c6\uc2b5\ub2c8\ub2e4'); return; }
+  document.getElementById('print-overlay').classList.add('open');
+}
+function closePrintModal(e) {
+  if (e.target === document.getElementById('print-overlay'))
+    document.getElementById('print-overlay').classList.remove('open');
+}
+
+/* ── 환자 정보 ── */
+function getPatientInfo() {
+  return {
+    name: document.getElementById('inp-name').value.trim() || '(\ubbf8\uc785\ub825)',
+    chart: document.getElementById('inp-chart').value.trim(),
+    date: document.getElementById('inp-date').value.replace(/-/g, '.')
+  };
+}
+
+/* ── 선택 항목 수집 ── */
+function getCheckedItems() {
+  var els = document.querySelectorAll('.item.checked,.pkg-item.checked');
+  var result = [];
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    var nameEl = el.querySelector('.item-name,.pkg-name');
+    var subEl = el.querySelector('.item-sub,.pkg-desc');
+    var tagEl = el.querySelector('.pkg-tag');
+    var p = parseInt(el.getAttribute('data-price'));
+    var vf = el.getAttribute('data-vat-fixed');
+    var va = el.getAttribute('data-vat');
+    var vatAmt = vf ? parseInt(vf) : (va === 'true' ? Math.round(p * 0.1) : 0);
+    result.push({
+      id: el.getAttribute('data-id') || (el.getAttribute('data-kind') + '_' + i),
+      name: nameEl ? nameEl.textContent : '',
+      sub: subEl ? subEl.textContent : '',
+      tag: tagEl ? tagEl.textContent : '',
+      price: p, vatAmt: vatAmt,
+      kind: el.getAttribute('data-kind'),
+      isVat: !!(vf || va === 'true'),
+      isBest: el.classList.contains('best')
+    });
+  }
+  return result;
+}
+
+/* ── 전체 섹션 수집 ── */
+function getAllSections() {
+  var secs = [];
+  var secEls = document.querySelectorAll('.sec-wrap');
+  for (var i = 0; i < secEls.length; i++) {
+    var sec = secEls[i];
+    var titleEl = sec.querySelector('.sec-title-text');
+    var isPink = sec.classList.contains('pink-sec');
+    var isGold = sec.classList.contains('gold-sec');
+    var color = isPink ? '#8c1a32' : (isGold ? '#7a6218' : '#1a6050');
+    var bgLight = isPink ? '#fff5f7' : (isGold ? '#fffbee' : '#f0fffb');
+    var pkgBg = isPink ? '#fffcfd' : (isGold ? '#fffef5' : '#f8fffd');
+    var itemEls = sec.querySelectorAll('.item');
+    var items = [];
+    for (var j = 0; j < itemEls.length; j++) {
+      var el = itemEls[j];
+      var nm = el.querySelector('.item-name');
+      var sub = el.querySelector('.item-sub');
+      items.push({ name: nm ? nm.textContent : '', sub: sub ? sub.textContent : '',
+        price: parseInt(el.getAttribute('data-price')), checked: el.classList.contains('checked'), kind: 'trial' });
+    }
+    var pkgEls = sec.querySelectorAll('.pkg-item');
+    var pkgs = [];
+    for (var j = 0; j < pkgEls.length; j++) {
+      var el = pkgEls[j];
+      var nm = el.querySelector('.pkg-name');
+      var tg = el.querySelector('.pkg-tag');
+      pkgs.push({ name: nm ? nm.textContent : '', tag: tg ? tg.textContent : '',
+        price: parseInt(el.getAttribute('data-price')), checked: el.classList.contains('checked'),
+        isBest: el.classList.contains('best'), kind: 'pkg' });
+    }
+    secs.push({ title: titleEl ? titleEl.textContent : '', color: color, bgLight: bgLight, pkgBg: pkgBg, items: items, pkgs: pkgs });
+  }
+  return secs;
+}
+
+/* ── 공통 스타일 (인쇄용 인라인) ── */
+var PRINT_STYLE = '<style>'
+  + '*{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important;}'
+  + 'html,body{width:100%;height:100%;}'
+  + 'body{font-family:"Noto Sans KR",sans-serif;background:#fff!important;padding:10mm 12mm;}'
+  + '.print-content{display:block!important;visibility:visible!important;opacity:1!important;}'
+  + '.pw-bar{position:fixed;top:0;left:0;right:0;background:#fff;border-bottom:1px solid #f0d0d8;padding:8px 16px;display:flex;gap:8px;justify-content:flex-end;z-index:9999;}'
+  + '.pw-btn{height:36px;padding:0 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:sans-serif;}'
+  + '.pw-btn-close{background:#fce8ed;color:#5a1028;}'
+  + '.pw-btn-home{background:linear-gradient(135deg,#8c1a32,#b03050);color:#fff;}'
+  + 'body.has-bar{padding-top:56px;}'
+  + '@page{size:A4 portrait;margin:0;}'
+  + '@media print{'
+  + '  .pw-bar{display:none!important;}'
+  + '  body.has-bar{padding-top:8mm;}'
+  + '  body{padding:8mm 10mm;background:#fff!important;}'
+  + '  @page{size:A4 portrait;margin:0;}'
+  + '  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important;}'
+  + '}'
+  + '</style>';
+
+/* ── 환자용 인쇄 내용 생성 ── */
+function getPatientContent(info, items, sigData) {
+  var trialItems = [], pkgItems = [];
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].kind === 'trial') trialItems.push(items[i]);
+    else pkgItems.push(items[i]);
+  }
+  var trialTotal = 0, pkgTotal = 0, vatTotal = 0;
+  for (var i = 0; i < trialItems.length; i++) trialTotal += trialItems[i].price;
+  for (var i = 0; i < pkgItems.length; i++) pkgTotal += pkgItems[i].price;
+  for (var i = 0; i < items.length; i++) vatTotal += items[i].vatAmt;
+  var grandTotal = trialTotal + pkgTotal + vatTotal;
+
+  var rs = 'display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid #f0e0e6;';
+  var ns = 'font-size:13px;font-weight:600;color:#5a1028;font-family:sans-serif;';
+  var ps = 'font-family:serif;font-size:13px;font-weight:700;color:#8c1a32;white-space:nowrap;';
+  var ts = 'font-size:9px;background:#fce8ed;color:#8c1a32;padding:1px 7px;border-radius:8px;margin-left:7px;';
+
+  var trialRows = '';
+  for (var i = 0; i < trialItems.length; i++) {
+    var it = trialItems[i];
+    trialRows += '<div style="' + rs + '">'
+      + '<div><span style="' + ns + '">' + it.name + '</span>'
+      + (it.sub ? '<span style="font-size:10px;color:#9a7080;margin-left:5px;">' + it.sub + '</span>' : '')
+      + (it.isVat ? '<span style="font-size:8.5px;background:#fff0d0;color:#9a6000;padding:1px 6px;border-radius:6px;margin-left:6px;">부가세별도</span>' : '')
+      + '</div>'
+      + '<div style="text-align:right;">'
+      + '<span style="' + ps + '">' + it.price.toLocaleString() + '원</span>'
+      + (it.isVat ? '<div style="font-size:9px;color:#b08000;">+VAT ' + it.vatAmt.toLocaleString() + '원</div>' : '')
+      + '</div></div>';
+  }
+
+  var pkgRows = '';
+  for (var i = 0; i < pkgItems.length; i++) {
+    var it = pkgItems[i];
+    pkgRows += '<div style="' + rs + (it.isBest ? 'background:#fff8e8;' : '') + '">'
+      + '<div>'
+      + '<span style="' + ns + 'color:' + (it.isBest ? '#7a4500' : '#5a1028') + ';">' + it.name + '</span>'
+      + (it.isBest ? '<span style="font-size:9px;background:#e8a000;color:#fff;padding:1px 7px;border-radius:8px;margin-left:6px;font-weight:700;">⭐ 강추</span>' : '')
+      + (it.tag ? '<span style="' + ts + '">' + it.tag + '</span>' : '')
+      + (it.isVat ? '<span style="font-size:8.5px;background:#fff0d0;color:#9a6000;padding:1px 6px;border-radius:6px;margin-left:4px;">부가세별도</span>' : '')
+      + '</div>'
+      + '<div style="text-align:right;">'
+      + '<span style="' + ps + 'color:' + (it.isBest ? '#c06000' : '#8c1a32') + ';">' + it.price.toLocaleString() + '원</span>'
+      + (it.isVat ? '<div style="font-size:9px;color:#b08000;">+VAT ' + it.vatAmt.toLocaleString() + '원</div>' : '')
+      + '</div></div>';
+  }
+
+  var vatRow = vatTotal > 0
+    ? '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding-bottom:6px;border-bottom:1px dashed #e0c0c8;">'
+      + '<span style="font-size:11px;color:#9a7080;font-family:sans-serif;">부가세 총액</span>'
+      + '<span style="font-size:13px;font-weight:600;color:#9a7000;font-family:sans-serif;">' + vatTotal.toLocaleString() + '원</span></div>'
+    : '';
+
+  var titleDate = info.date.replace(/\./g, '').replace(/-/g, '');
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#8c1a32"><meta name="apple-mobile-web-app-capable" content="yes"><title>' + info.name + '_' + titleDate + '_환자용</title>'
+    + PRINT_STYLE
+    + '</head><body><div class="print-content">'
+    + '<div style="background:linear-gradient(135deg,#8c1a32,#b03050);border-radius:12px;padding:16px 22px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;-webkit-print-color-adjust:exact;print-color-adjust:exact;">'
+    + '<div>'
+    + '<div style="font-size:10px;letter-spacing:.4em;color:rgba(255,210,220,.75);font-weight:300;margin-bottom:3px;font-family:sans-serif;">빼 빼 한 의 원</div>'
+    + '<div style="font-family:serif;font-size:20px;font-weight:900;color:#fff;">1회 체험 이벤트 · 상담 확인서</div>'
+    + '</div>'
+    + '<div style="text-align:right;">'
+    + '<div style="font-size:10px;color:rgba(255,210,220,.7);margin-bottom:3px;font-family:sans-serif;">' + info.date + '</div>'
+    + (info.chart ? '<div style="font-size:10px;color:rgba(255,210,220,.7);font-family:sans-serif;">차트 ' + info.chart + '</div>' : '')
+    + '<div style="font-family:serif;font-size:18px;font-weight:700;color:#fff;">' + info.name + ' 님</div>'
+    + '</div></div>'
+
+    + (trialItems.length ? '<div style="margin-bottom:12px;">'
+      + '<div style="background:#8c1a32;color:#fff;padding:7px 14px;border-radius:8px 8px 0 0;font-size:11px;font-weight:700;letter-spacing:.12em;font-family:sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact;">1 회 &nbsp; 체 험 가</div>'
+      + '<div style="border:1px solid #f0d0d8;border-top:none;border-radius:0 0 8px 8px;overflow:hidden;">'
+      + trialRows
+      + '<div style="display:flex;justify-content:flex-end;padding:8px 14px;background:#fff5f7;font-size:12px;font-weight:600;color:#8c1a32;font-family:sans-serif;">소계 &nbsp;<span style="font-family:serif;font-size:15px;font-weight:700;">' + trialTotal.toLocaleString() + '원</span></div>'
+      + '</div></div>' : '')
+
+    + (pkgItems.length ? '<div style="margin-bottom:12px;">'
+      + '<div style="background:#4a3050;color:#fff;padding:7px 14px;border-radius:8px 8px 0 0;font-size:11px;font-weight:700;letter-spacing:.12em;font-family:sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact;">패 키 지 &nbsp; 프 로 그 램</div>'
+      + '<div style="border:1px solid #d8c8e0;border-top:none;border-radius:0 0 8px 8px;overflow:hidden;">'
+      + pkgRows
+      + '<div style="display:flex;justify-content:flex-end;padding:8px 14px;background:#f8f4fc;font-size:12px;font-weight:600;color:#4a3050;font-family:sans-serif;">소계 &nbsp;<span style="font-family:serif;font-size:15px;font-weight:700;">' + pkgTotal.toLocaleString() + '원</span></div>'
+      + '</div></div>' : '')
+
+    + '<div style="border:1.5px solid #e0b0c0;border-radius:10px;padding:12px 18px;margin-bottom:14px;background:#fff8f9;">'
+    + vatRow
+    + '<div style="display:flex;align-items:center;justify-content:space-between;">'
+    + '<span style="font-size:13px;font-weight:700;color:#5a1028;font-family:sans-serif;">총 합계</span>'
+    + '<span style="font-family:serif;font-size:22px;font-weight:900;color:#8c1a32;">' + grandTotal.toLocaleString() + ' <span style="font-size:14px;font-weight:400;">원</span></span>'
+    + '</div></div>'
+
+    + '<div style="background:#fff8f9;border:1px solid #f0d0d8;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:10.5px;color:#9a5060;line-height:1.9;font-family:sans-serif;">'
+    + '<div>✦ 체험 프로그램은 부가세 포함. 패키지 프로그램은 부가세 별도 가격입니다.</div>'
+    + '<div>✦ 1회 체험 프로그램은 동일 시술에 한하여 1회만 적용됩니다.</div>'
+    + '<div>✦ 패키지 시술권은 구매일로부터 1년 이내 사용을 권장합니다.</div>'
+    + '<div>✦ 일반침 치료시 본인부담금 별도 발생합니다.</div>'
+    + '<div>✦ 예약 및 문의 02-2038-2114</div>'
+    + '</div>'
+
+    + '<div style="border:1.5px solid #d0b0bc;border-radius:12px;padding:16px 18px;">'
+    + '<div style="font-size:12px;font-weight:700;color:#5a1028;margin-bottom:10px;font-family:sans-serif;">상담 확인 서명</div>'
+    + '<div style="font-size:11px;color:#7a5060;line-height:1.8;margin-bottom:14px;font-family:sans-serif;">본인은 위 항목에 대한 충분한 설명을 들었으며, 시술 내용 및 가격에 동의합니다.</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'
+    + '<div><div style="font-size:10px;color:#9a7080;margin-bottom:4px;font-family:sans-serif;">날 짜</div><div style="border-bottom:1.5px solid #c0a0b0;padding-bottom:4px;font-size:12px;color:#5a1028;font-family:sans-serif;">' + info.date + '</div></div>'
+    + '<div><div style="font-size:10px;color:#9a7080;margin-bottom:4px;font-family:sans-serif;">환자 성명</div><div style="border-bottom:1.5px solid #c0a0b0;padding-bottom:4px;font-size:12px;color:#5a1028;font-family:sans-serif;">' + info.name + '</div></div>'
+    + '</div>'
+    + '<div style="margin-top:16px;"><div style="font-size:10px;color:#9a7080;margin-bottom:6px;font-family:sans-serif;">환자 서명</div>'
+    + (sigData
+        ? '<img src="' + sigData + '" style="max-width:100%;height:80px;border:1px solid #e0c0c8;border-radius:6px;background:#fff;">'
+        : '<div style="border-bottom:1.5px solid #c0a0b0;margin-top:24px;"></div>')
+    + '</div>'
+    + '</div>'
+    + '<div style="text-align:center;margin-top:14px;font-size:9px;color:#c0a0b0;letter-spacing:.2em;font-family:sans-serif;">빼 빼 한 의 원 &nbsp;·&nbsp; 다이어트 · 스킨 클리닉 &nbsp;·&nbsp; 02-2038-2114</div>'
+    + '</div>\n\n</body></html>';
+}
+
+/* ── 원내용 인쇄 내용 생성 ── */
+function getFullContent(info, allSecs, checkedItems, sigData) {
+  var trialTotal = 0, pkgTotal = 0, vatTotal = 0;
+  for (var i = 0; i < checkedItems.length; i++) {
+    if (checkedItems[i].kind === 'trial') trialTotal += checkedItems[i].price;
+    else pkgTotal += checkedItems[i].price;
+    vatTotal += checkedItems[i].vatAmt;
+  }
+  var grandTotal = trialTotal + pkgTotal + vatTotal;
+
+  var secHTML = '';
+  for (var i = 0; i < allSecs.length; i++) {
+    var sec = allSecs[i];
+    var trialRows = '';
+    for (var j = 0; j < sec.items.length; j++) {
+      var it = sec.items[j];
+      trialRows += '<tr style="background:' + (it.checked ? sec.bgLight : '#fff') + ';-webkit-print-color-adjust:exact;print-color-adjust:exact;">'
+        + '<td style="padding:5px 10px;border-bottom:1px solid #f0e8ec;">'
+        + '<span style="display:inline-block;width:14px;height:14px;border:1.5px solid ' + sec.color + ';border-radius:4px;background:' + (it.checked ? sec.color : 'transparent') + ';margin-right:7px;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></span>'
+        + '<span style="font-size:12px;font-weight:' + (it.checked ? '700' : '400') + ';color:' + (it.checked ? sec.color : '#777') + ';font-family:sans-serif;">' + it.name + '</span>'
+        + '</td>'
+        + '<td style="padding:5px 10px;text-align:center;font-size:12px;font-weight:' + (it.checked ? '700' : '400') + ';color:' + (it.checked ? sec.color : '#aaa') + ';font-family:sans-serif;border-bottom:1px solid #f0e8ec;">' + it.price.toLocaleString() + '원</td>'
+        + '</tr>';
+    }
+    var pkgRows = '';
+    for (var j = 0; j < sec.pkgs.length; j++) {
+      var it = sec.pkgs[j];
+      pkgRows += '<tr style="background:' + (it.checked ? (it.isBest ? '#fff8e8' : sec.pkgBg) : '#fff') + ';-webkit-print-color-adjust:exact;print-color-adjust:exact;">'
+        + '<td style="padding:5px 10px;border-bottom:1px solid #f0e8ec;">'
+        + '<span style="display:inline-block;width:14px;height:14px;border:1.5px solid ' + sec.color + ';border-radius:4px;background:' + (it.checked ? sec.color : 'transparent') + ';margin-right:7px;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></span>'
+        + '<span style="font-size:12px;font-weight:' + (it.checked ? '700' : '400') + ';color:' + (it.checked ? (it.isBest ? '#7a4500' : sec.color) : '#777') + ';font-family:sans-serif;">' + it.name + '</span>'
+        + (it.isBest && it.checked ? '<span style="font-size:8px;background:#e8a000;color:#fff;padding:1px 5px;border-radius:6px;margin-left:5px;-webkit-print-color-adjust:exact;print-color-adjust:exact;">⭐강추</span>' : '')
+        + (it.tag ? '<span style="font-size:8px;background:#f0e0e8;color:#8c1a32;padding:1px 5px;border-radius:6px;margin-left:4px;-webkit-print-color-adjust:exact;print-color-adjust:exact;">' + it.tag + '</span>' : '')
+        + '</td>'
+        + '<td style="padding:5px 10px;text-align:center;font-size:12px;font-weight:' + (it.checked ? '700' : '400') + ';color:' + (it.checked ? (it.isBest ? '#c06000' : sec.color) : '#bbb') + ';font-family:sans-serif;border-bottom:1px solid #f0e8ec;">' + it.price.toLocaleString() + '원</td>'
+        + '</tr>';
+    }
+    secHTML += '<div style="margin-bottom:10px;border:1px solid ' + sec.color + '40;border-radius:10px;overflow:hidden;">'
+      + '<div style="background:' + sec.color + ';color:#fff;padding:6px 12px;font-size:12px;font-weight:700;letter-spacing:.14em;font-family:sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact;">' + sec.title + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;">'
+      + '<div style="border-right:1px solid ' + sec.color + '30;">'
+      + '<div style="background:' + sec.color + 'cc;color:#fff;padding:4px 10px;font-size:9px;font-weight:600;font-family:sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact;">1회 체험가</div>'
+      + '<table style="width:100%;border-collapse:collapse;">' + trialRows + '</table>'
+      + '</div>'
+      + '<div>'
+      + '<div style="background:' + sec.color + 'cc;color:#fff;padding:4px 10px;font-size:9px;font-weight:600;font-family:sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact;">패키지 프로그램</div>'
+      + '<table style="width:100%;border-collapse:collapse;">' + pkgRows + '</table>'
+      + '</div></div></div>';
+  }
+
+  var titleDate = info.date.replace(/\./g, '').replace(/-/g, '');
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#8c1a32"><meta name="apple-mobile-web-app-capable" content="yes"><title>' + info.name + '_' + titleDate + '_원내용</title>'
+    + PRINT_STYLE
+    + '</head><body><div class="print-content">'
+    + '<div style="background:linear-gradient(135deg,#8c1a32,#b03050);border-radius:10px;padding:12px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;-webkit-print-color-adjust:exact;print-color-adjust:exact;">'
+    + '<div>'
+    + '<div style="font-size:9px;letter-spacing:.4em;color:rgba(255,210,220,.7);font-weight:300;font-family:sans-serif;">빼 빼 한 의 원</div>'
+    + '<div style="font-family:serif;font-size:16px;font-weight:900;color:#fff;">원내 공유용 · 상담 기록</div>'
+    + '</div>'
+    + '<div style="text-align:right;color:#fff;">'
+    + '<div style="font-size:10px;opacity:.75;font-family:sans-serif;">' + info.date + (info.chart ? ' · 차트 ' + info.chart : '') + '</div>'
+    + '<div style="font-family:serif;font-size:16px;font-weight:700;">' + info.name + ' 님</div>'
+    + '<div style="font-size:10px;opacity:.75;margin-top:2px;font-family:sans-serif;">선택 합계: ' + grandTotal.toLocaleString() + '원 (체험 ' + trialTotal.toLocaleString() + ' + 패키지 ' + pkgTotal.toLocaleString() + (vatTotal > 0 ? ' + 부가세 ' + vatTotal.toLocaleString() : '') + ')</div>'
+    + '</div></div>'
+    + secHTML
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">'
+    + '<div style="background:#fff8f9;border:1px solid #f0d0d8;border-radius:8px;padding:8px 12px;font-size:9.5px;color:#9a5060;line-height:1.7;font-family:sans-serif;">'
+    + '<div>✦ 체험 부가세 포함 / 패키지 부가세 별도</div>'
+    + '<div>✦ 1회 체험에 한하여 적용됩니다</div>'
+    + '<div>✦ 일반침 치료시 본인부담금 별도</div>'
+    + '</div>'
+    + '<div style="border:1.5px solid #d0b0bc;border-radius:8px;padding:8px 12px;">'
+    + '<div style="font-size:10px;font-weight:700;color:#5a1028;margin-bottom:6px;font-family:sans-serif;">환자 서명</div>'
+    + '<div style="font-size:9.5px;color:#7a5060;margin-bottom:10px;font-family:sans-serif;">위 항목 설명을 충분히 듣고 동의합니다.</div>'
+    + '<div style="display:flex;align-items:flex-end;gap:16px;">'
+    + '<div style="flex:1;"><div style="font-size:9px;color:#aaa;margin-bottom:2px;font-family:sans-serif;">날짜</div><div style="border-bottom:1px solid #c0a0b0;padding-bottom:2px;font-size:10px;font-family:sans-serif;">' + info.date + '</div></div>'
+    + '<div style="flex:1;"><div style="font-size:9px;color:#aaa;margin-bottom:2px;font-family:sans-serif;">성명</div><div style="border-bottom:1px solid #c0a0b0;padding-bottom:2px;font-size:10px;font-family:sans-serif;">' + info.name + '</div></div>'
+    + '</div>'
+    + '<div style="margin-top:10px;"><div style="font-size:9px;color:#aaa;margin-bottom:4px;font-family:sans-serif;">서명</div>'
+    + (sigData
+        ? '<img src="' + sigData + '" style="max-width:100%;height:60px;border:1px solid #e0c0c8;border-radius:4px;background:#fff;">'
+        : '<div style="border-bottom:1px solid #c0a0b0;margin-top:16px;"></div>')
+    + '</div></div></div>'
+    + '<div style="text-align:center;margin-top:8px;font-size:8.5px;color:#c0a0b0;letter-spacing:.18em;font-family:sans-serif;">빼 빼 한 의 원 &nbsp;·&nbsp; 다이어트 · 스킨 클리닉 &nbsp;·&nbsp; 02-2038-2114</div>'
+    + '</div></body></html>';
+}
+
+/* ── 인쇄 실행 (PDF 저장 및 무선 프린터 지원) ── */
+function doPrint(type) {
+  document.getElementById('print-overlay').classList.remove('open');
+
+  var info = getPatientInfo();
+  var checkedItems = getCheckedItems();
+  var fileName = '(체)' + info.name + '_' + info.date.replace(/\./g, '') + '_' + (type === 'patient' ? '환자용' : '원내용');
+  var currentSig = sigSavedData || null;
+
+  var content;
+  if (type === 'patient') {
+    content = getPatientContent(info, checkedItems, currentSig);
+  } else {
+    content = getFullContent(info, getAllSections(), checkedItems, currentSig);
+  }
+
+  // 새창에서 인쇄 (기존 창 유지)
+  var pw = window.open('', '_blank', 'width=800,height=1000,scrollbars=yes,resizable=yes');
+  if (!pw) { showToast('팝업이 차단됐습니다. 팝업 허용 후 다시 시도해주세요.'); return; }
+  var evBar='<div class="pw-bar"><button class="pw-btn pw-btn-close" onclick="window.close()">✕ 닫기</button><button class="pw-btn pw-btn-home" onclick="window.opener?window.opener.focus():null;window.close();">홈으로</button></div>';
+  var evContent=content.replace('<body>','<body class="has-bar">').replace('<body class="print-content">','<body class="print-content has-bar">');
+  // insert bar after first <body...> tag
+  evContent=evContent.replace(/(<body[^>]*>)/,'$1'+evBar);
+  var penOv=window.penGetOverlayDataURL?window.penGetOverlayDataURL():null;
+  if(penOv) evContent=evContent.replace('</body>','<img src="'+penOv+'" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1000;" /></body>');
+  pw.document.open();
+  pw.document.write(evContent);
+  pw.document.close();
+  pw.document.title = fileName;
+  pw.onload = function() {
+    pw.print();
+  };
+  // onload 미발생 대비
+  setTimeout(function() {
+    try { pw.print(); } catch(e) {}
+  }, 600);
+}
+
+/* ── 저장된 상태 복원 (페이지 로드 시) ── */
+function restoreSavedState() {
+  try {
+    var saved = localStorage.getItem('bbaebbae_print_state');
+    if (!saved) return;
+    
+    var state = JSON.parse(saved);
+    
+    // 환자 정보 복원
+    if (state.chart) document.getElementById('inp-chart').value = state.chart;
+    if (state.name) document.getElementById('inp-name').value = state.name;
+    if (state.date) document.getElementById('inp-date').value = state.date;
+    
+    // 선택 항목 복원
+    if (state.checkedItems && state.checkedItems.length > 0) {
+      for (var ci = 0; ci < state.checkedItems.length; ci++) {
+        var el = document.querySelector('[data-id="' + state.checkedItems[ci] + '"]');
+        if (el) el.classList.add('checked');
+      }
+    }
+    
+    // 서명 복원
+    if (state.signature) {
+      sigSavedData = state.signature;
+      try {
+        var ctx = sigCanvas.getContext('2d');
+        var img = new Image();
+        img.onload = function() {
+          ctx.drawImage(img, 0, 0);
+        };
+        img.src = state.signature;
+      } catch(e) {}
+    }
+    
+    // 요약 업데이트
+    updateSummary();
+  } catch(e) {
+    console.error('상태 복원 오류:', e);
+  }
+}
+
+function closePrintGuide() {}
+function executePrint() {}
+function cancelPrint() {
+  document.getElementById('print-confirm-overlay').style.display = 'none';
+}
+
+function goConsent(){
+  var info = getPatientInfo();
+  if(!info.name || info.name==='(미입력)'){ showToast('환자 이름을 먼저 입력해주세요'); return; }
+  var els = document.querySelectorAll('.item.checked, .pkg-item.checked');
+  var items = []; var seen = {};
+  for(var i=0;i<els.length;i++){
+    var nmEl = els[i].querySelector('.item-name') || els[i].querySelector('.pkg-name');
+    if(!nmEl) continue;
+    var discEl = nmEl.querySelector('.item-disc');
+    var badgeEls = nmEl.querySelectorAll('.pkg-discount-badge');
+    var baseName = discEl ? nmEl.firstChild.textContent.trim()
+                  : (badgeEls.length ? (nmEl.childNodes[0]?nmEl.childNodes[0].textContent.trim():nmEl.textContent.trim())
+                  : nmEl.textContent.trim());
+    if(!baseName || seen[baseName]) continue;
+    seen[baseName] = 1;
+    var item = {label: baseName};
+    if(discEl){
+      var defBg='#fff0d0',defCol='#9a6000';
+      item.badge = discEl.textContent; item.badgeBg = defBg; item.badgeCol = defCol;
+    } else if(badgeEls.length){
+      var defBg2='#fce8ed',defCol2='#8c1a32';
+      var bArr=[];
+      for(var b=0;b<badgeEls.length;b++) bArr.push({text:badgeEls[b].textContent,bg:defBg2,col:defCol2});
+      item.badges = bArr;
+    }
+    items.push(item);
+  }
+  var data = { chart:info.chart, name:info.name, date:info.date.replace(/\./g,'-'), items:items, source:'event' };
+  try{ localStorage.setItem('bbaebbae_consent_temp', JSON.stringify(data)); }catch(e){}
+  location.href = 'consent.html';
+}
+
+</script>
+<!-- ═══ 빨간펜 오버레이 ═══ -->
+<script>
+(function(){
+
+  /* ── 모든 요소를 <html>에 직접 생성 (body zoom 완전 차단) ── */
+
+  /* 그리기 캔버스: 펜 ON일 때만 표시 */
+  var canvas = document.createElement('canvas');
+  canvas.id = 'pen-canvas';
+  canvas.setAttribute('style',[
+    'position:fixed','top:0','left:0',
+    'width:100%','height:100%',
+    'pointer-events:none',
+    'z-index:2147483646',
+    'display:none'
+  ].join(';'));
+  document.documentElement.appendChild(canvas);
+
+  /* 스냅샷 이미지: 펜 OFF + 필기 있을 때 표시 */
+  var snapImg = document.createElement('img');
+  snapImg.id = 'pen-snapshot';
+  snapImg.setAttribute('style',[
+    'position:fixed','top:0','left:0',
+    'width:100%','height:100%',
+    'pointer-events:none',
+    'z-index:2147483645',
+    'display:none'
+  ].join(';'));
+  document.documentElement.appendChild(snapImg);
+
+  /* FAB 버튼 */
+  var fab = document.createElement('button');
+  fab.id = 'pen-fab';
+  fab.innerHTML = '✏️';
+  fab.title = '빨간펜';
+  fab.setAttribute('style',[
+    'position:fixed','bottom:130px','right:16px',
+    'width:52px','height:52px','border-radius:50%',
+    'border:3px solid #fff','background:#e00','color:#fff',
+    'font-size:22px','box-shadow:0 3px 14px rgba(0,0,0,.4)',
+    'cursor:pointer','z-index:2147483647','display:block',
+    'padding:0','line-height:1','font-family:sans-serif'
+  ].join(';'));
+  document.documentElement.appendChild(fab);
+
+  /* 툴바 */
+  var toolbar = document.createElement('div');
+  toolbar.id = 'pen-toolbar';
+  toolbar.setAttribute('style',[
+    'position:fixed','bottom:130px','right:16px',
+    'z-index:2147483647','display:none',
+    'flex-direction:column','gap:8px','align-items:center'
+  ].join(';'));
+  toolbar.innerHTML =
+    '<button id="pen-toggle" style="width:52px;height:52px;border-radius:50%;border:3px solid #fff;background:#e00;color:#fff;font-size:22px;box-shadow:0 3px 14px rgba(0,0,0,.35);cursor:pointer;padding:0;">✏️</button>'
+   +'<button id="pen-erase" style="width:40px;height:40px;border-radius:50%;border:2px solid #fff;background:#555;color:#fff;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer;padding:0;">🗑</button>'
+   +'<button id="pen-undo"  style="width:40px;height:40px;border-radius:50%;border:2px solid #fff;background:#888;color:#fff;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer;padding:0;">↩</button>';
+  document.documentElement.appendChild(toolbar);
+
+  /* ── 상태 ── */
+  var ctx = null;
+  var penOn = false;
+  var drawing = false;
+  var strokes = [];
+  var currentStroke = null;
+  var snapScrollX = 0, snapScrollY = 0;  /* 스냅샷 촬영 시점의 스크롤 위치 */
+
+  /* ── 캔버스 초기화 ── */
+  function initCanvas(){
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    ctx = canvas.getContext('2d');
+    ctx.strokeStyle='#e00'; ctx.lineWidth=3; ctx.lineCap='round'; ctx.lineJoin='round';
+  }
+
+  /* ── 현재 스크롤 기준으로 캔버스에 다시 그리기 ── */
+  function redraw(){
+    if(!ctx) return;
+    var sx = window.pageXOffset||window.scrollX||0;
+    var sy = window.pageYOffset||window.scrollY||0;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle='#e00'; ctx.lineWidth=3; ctx.lineCap='round'; ctx.lineJoin='round';
+    for(var i=0;i<strokes.length;i++){
+      var pts=strokes[i].pts;
+      if(pts.length<2) continue;
+      ctx.beginPath(); ctx.moveTo(pts[0].px-sx, pts[0].py-sy);
+      for(var j=1;j<pts.length;j++) ctx.lineTo(pts[j].px-sx, pts[j].py-sy);
+      ctx.stroke();
+    }
+  }
+
+  /* ── 스냅샷: 현재 뷰포트를 img에 저장 ── */
+  function takeSnapshot(){
+    if(strokes.length===0){ snapImg.style.display='none'; return; }
+    snapScrollX = window.pageXOffset||window.scrollX||0;
+    snapScrollY = window.pageYOffset||window.scrollY||0;
+    /* 임시 캔버스에 현재 뷰포트 기준으로 렌더 */
+    var tmp = document.createElement('canvas');
+    tmp.width  = window.innerWidth;
+    tmp.height = window.innerHeight;
+    var tc = tmp.getContext('2d');
+    tc.strokeStyle='#e00'; tc.lineWidth=3; tc.lineCap='round'; tc.lineJoin='round';
+    var sx = window.pageXOffset||window.scrollX||0;
+    var sy = window.pageYOffset||window.scrollY||0;
+    for(var i=0;i<strokes.length;i++){
+      var pts=strokes[i].pts;
+      if(pts.length<2) continue;
+      tc.beginPath(); tc.moveTo(pts[0].px-sx, pts[0].py-sy);
+      for(var j=1;j<pts.length;j++) tc.lineTo(pts[j].px-sx, pts[j].py-sy);
+      tc.stroke();
+    }
+    snapImg.src = tmp.toDataURL('image/png');
+    snapImg.style.willChange = 'transform';
+    snapImg.style.transform = 'translate(0,0)';
+    snapImg.style.display = 'block';
+  }
+
+  /* ── 좌표: clientX/Y → 페이지 절대 좌표 ── */
+  function getPageXY(e, touch){
+    var src = touch||e;
+    return {
+      px: src.clientX + (window.pageXOffset||window.scrollX||0),
+      py: src.clientY + (window.pageYOffset||window.scrollY||0)
+    };
+  }
+
+  /* ── 터치/마우스 ── */
+  function onStart(e){
+    if(!penOn) return;
+    e.preventDefault(); e.stopPropagation();
+    drawing=true;
+    var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
+    currentStroke={pts:[pt]};
+    if(!ctx) initCanvas();
+    var sx=window.pageXOffset||0, sy=window.pageYOffset||0;
+    ctx.beginPath(); ctx.moveTo(pt.px-sx, pt.py-sy);
+  }
+  function onMove(e){
+    if(!penOn||!drawing) return;
+    e.preventDefault(); e.stopPropagation();
+    var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
+    currentStroke.pts.push(pt);
+    var sx=window.pageXOffset||0, sy=window.pageYOffset||0;
+    ctx.lineTo(pt.px-sx, pt.py-sy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pt.px-sx, pt.py-sy);
+  }
+  function onEnd(e){
+    if(!penOn||!drawing) return;
+    drawing=false;
+    if(currentStroke&&currentStroke.pts.length>0) strokes.push(currentStroke);
+    currentStroke=null;
+  }
+
+  canvas.addEventListener('touchstart',onStart,{passive:false});
+  canvas.addEventListener('touchmove', onMove, {passive:false});
+  canvas.addEventListener('touchend',  onEnd,  {passive:false});
+  canvas.addEventListener('mousedown', onStart);
+  canvas.addEventListener('mousemove', onMove);
+  canvas.addEventListener('mouseup',   onEnd);
+  canvas.addEventListener('mouseleave',onEnd);
+
+  /* 스크롤 시: 펜 ON → 캔버스 재렌더 / 펜 OFF → transform만 업데이트 (GPU, 부드러움) */
+  window.addEventListener('scroll', function(){
+    if(penOn){ redraw(); return; }
+    if(strokes.length===0) return;
+    var sx = window.pageXOffset||window.scrollX||0;
+    var sy = window.pageYOffset||window.scrollY||0;
+    snapImg.style.transform = 'translate('+(snapScrollX-sx)+'px,'+(snapScrollY-sy)+'px)';
+  }, {passive:true});
+
+  /* 리사이즈 */
+  window.addEventListener('resize', function(){
+    if(penOn){ initCanvas(); redraw(); }
+    else if(strokes.length>0) takeSnapshot();
+  });
+
+  /* ── 버튼 ── */
+  fab.onclick = function(){
+    fab.style.display='none';
+    toolbar.style.display='flex';
+  };
+
+  document.getElementById('pen-toggle').onclick = function(){
+    penOn=!penOn;
+    var btn=document.getElementById('pen-toggle');
+    if(penOn){
+      /* 펜 켬: 스냅샷 숨기고 캔버스 표시 */
+      snapImg.style.display='none';
+      initCanvas(); redraw();
+      canvas.style.display='block';
+      canvas.style.pointerEvents='auto';
+      btn.style.background='#b00'; btn.style.transform='scale(1.15)';
+    } else {
+      /* 펜 끔: 캔버스 숨기고 스냅샷 표시 */
+      canvas.style.pointerEvents='none';
+      canvas.style.display='none';
+      takeSnapshot();
+      btn.style.background='#e00'; btn.style.transform='scale(1)';
+    }
+  };
+
+  document.getElementById('pen-erase').onclick = function(){
+    strokes=[];
+    if(ctx) ctx.clearRect(0,0,canvas.width,canvas.height);
+    canvas.style.display='none';
+    snapImg.style.display='none';
+  };
+
+  document.getElementById('pen-undo').onclick = function(){
+    if(strokes.length>0){
+      strokes.pop();
+      if(penOn) redraw();
+      else takeSnapshot();
+    }
+  };
+
+  document.addEventListener('click',function(e){
+    if(!toolbar.contains(e.target)&&e.target!==fab){
+      if(!penOn){ toolbar.style.display='none'; fab.style.display='block'; }
+    }
+  });
+
+  /* ── 인쇄용 오버레이 ── */
+  window.penGetOverlayDataURL = function(){ return null; };
+
+  window.penToggleMode  = function(){ document.getElementById('pen-toggle').onclick(); };
+  window.penErase       = function(){ document.getElementById('pen-erase').onclick();  };
+  window.penUndoLast    = function(){ document.getElementById('pen-undo').onclick();   };
+  window.penOpenToolbar = function(){ fab.onclick(); };
+
+})();
+</script>
+</body>
+</html>
+
+
+
+
+
+

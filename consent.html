@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>빼빼한의원 시술동의서</title>
+<link rel="manifest" href="manifest.json">
+<script>
+/* 기존 서비스워커 캐시 강제 삭제 */
+(function(){
+  if(!('caches' in window)) return;
+  caches.keys().then(function(keys){
+    keys.forEach(function(k){ caches.delete(k); });
+  });
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(function(regs){
+      regs.forEach(function(reg){
+        reg.update();
+      });
+    });
+  }
+})();
+</script>
+<meta name="theme-color" content="#0d2210">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{background:#f0f2ee;font-family:'Noto Sans KR',sans-serif;min-height:100vh;}
+body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
+@media (orientation:landscape){body{zoom:1.0;-moz-transform:scale(1.0);}}
+:root{--navy:#0d1f3c;--green:#0d2210;--accent:#0369a1;--light:#f0f8ff;--border:#c8dff0;}
+
+.wrap{max-width:700px;margin:0 auto;padding:20px 16px 100px;}
+
+/* ── 헤더 ── */
+.page-header{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.btn-back{width:40px;height:40px;border-radius:10px;border:none;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.page-title-wrap{flex:1;}
+.page-title{font-family:'Noto Serif KR',serif;font-size:20px;font-weight:900;color:var(--green);letter-spacing:.06em;}
+.page-sub{font-size:10px;color:#8aaa90;letter-spacing:.2em;margin-top:2px;}
+
+/* ── 섹션 카드 ── */
+.card{background:#fff;border-radius:16px;padding:18px 18px;box-shadow:0 2px 14px rgba(13,31,60,.08);margin-bottom:14px;}
+.sec-label{font-family:'Noto Serif KR',serif;font-size:12px;font-weight:700;letter-spacing:.2em;color:var(--navy);border-bottom:1.5px solid #e8f0f8;padding-bottom:8px;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.sec-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:.08em;}
+.badge-required{background:#fee2e2;color:#b91c1c;}
+.badge-optional{background:#e0f2fe;color:#0369a1;}
+
+/* ── 환자정보 ── */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.info-item{display:flex;flex-direction:column;gap:3px;}
+.info-label{font-size:10px;color:#8899bb;font-weight:500;}
+.info-value{font-size:14px;font-weight:700;color:var(--navy);padding:6px 10px;background:#f4f8ff;border-radius:8px;min-height:34px;display:flex;align-items:center;}
+.info-value.empty{color:#c0cce0;font-weight:400;font-size:12px;}
+
+/* ── 시술 선택 태그 ── */
+.treatment-tags{display:flex;flex-wrap:wrap;gap:6px;min-height:36px;}
+.treatment-tag{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;background:linear-gradient(135deg,#e8f2ff,#dbeeff);border:1px solid #b8d8f8;font-size:12px;font-weight:700;color:#0d1f3c;}
+.treatment-tag svg{width:12px;height:12px;}
+.no-tag{font-size:12px;color:#c0cce0;padding:8px 0;}
+
+/* ── 고지사항 ── */
+.notice-group{margin-bottom:14px;}
+.notice-group-title{font-size:11px;font-weight:700;color:var(--navy);background:#f0f4ff;padding:6px 10px;border-radius:8px;margin-bottom:8px;letter-spacing:.06em;}
+.notice-list{padding-left:4px;}
+.notice-item{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid #f0f4f8;font-size:12px;line-height:1.65;color:#334;}
+.notice-item:last-child{border-bottom:none;}
+.notice-num{color:var(--accent);font-weight:700;flex-shrink:0;font-size:11px;padding-top:1px;}
+.notice-highlight{background:#fff3cd;padding:1px 4px;border-radius:3px;font-weight:700;color:#7a5200;}
+
+/* ── 동의 체크 항목 ── */
+.agree-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid #f0f4f8;}
+.agree-item:last-child{border-bottom:none;}
+.agree-check{width:24px;height:24px;border-radius:6px;border:2px solid #c0d0e8;background:#fff;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .15s;}
+.agree-check.checked{background:var(--accent);border-color:var(--accent);}
+.agree-check svg{display:none;}
+.agree-check.checked svg{display:block;}
+.agree-check.required-check{border-color:#0369a1;}
+.agree-body{flex:1;}
+.agree-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:3px;display:flex;align-items:center;gap:6px;}
+.agree-desc{font-size:11px;color:#6a80a0;line-height:1.7;}
+
+/* ── 서명 ── */
+.sig-label{font-size:10px;color:#8899bb;margin-bottom:5px;}
+.sig-canvas{width:100%;height:130px;border:1.5px dashed #90aac8;border-radius:10px;display:block;touch-action:none;background:#f8fbff;cursor:crosshair;}
+.sig-btns{display:flex;gap:8px;margin-top:8px;}
+.sig-btn{height:32px;padding:0 14px;border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:600;cursor:pointer;border:none;}
+.sig-btn-clear{background:#e8f0f8;color:var(--navy);}
+.sig-btn-save{background:var(--accent);color:#fff;}
+.sig-saved-wrap{text-align:center;padding:6px 0;}
+.sig-saved-label{font-size:10px;color:#0d9488;font-weight:600;margin-bottom:5px;}
+.sig-saved-img{max-width:100%;height:80px;border:1px solid #cde;border-radius:6px;background:#fff;}
+.sig-desc{font-size:11px;color:#8899bb;margin-bottom:8px;}
+
+.sign-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:480px){.sign-grid{grid-template-columns:1fr;}}
+
+/* ── 하단 버튼 ── */
+.bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:700px;background:#fff;border-top:1px solid #e0e8f0;padding:12px 16px;display:flex;gap:10px;z-index:100;}
+@media(max-width:700px){.bottom-bar{left:0;transform:none;}}
+.btn{flex:1;height:50px;border-radius:14px;border:none;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .15s;}
+.btn:active{opacity:.85;}
+.btn-home{flex:.7;background:#e8f0f8;color:var(--navy);}
+.btn-reset{flex:.7;border:1.5px solid #c0d0e8;background:#fff;color:#4a6080;}
+.btn-save{background:linear-gradient(135deg,var(--green),#166534);color:#fff;box-shadow:0 3px 12px rgba(13,34,16,.25);}
+.btn-print{flex:1.2;background:linear-gradient(135deg,#0369a1,#0891b2);color:#fff;box-shadow:0 3px 12px rgba(8,145,178,.3);}
+
+/* ── 저장 기록 ── */
+.history-wrap{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(13,34,16,.08);}
+.history-head{background:var(--green);padding:9px 18px;display:flex;align-items:center;justify-content:space-between;}
+.history-head-title{font-family:'Noto Serif KR',serif;font-size:12px;font-weight:700;letter-spacing:.14em;color:#fff;}
+.history-cnt{font-size:10px;color:rgba(180,240,200,.7);}
+.history-list{max-height:220px;overflow-y:auto;}
+.history-empty{padding:16px 18px;font-size:12px;color:#99aabb;text-align:center;font-weight:300;}
+.h-row{display:flex;align-items:center;padding:10px 18px;border-bottom:1px solid #eef2f8;gap:10px;cursor:pointer;transition:background .12s;}
+.h-row:last-child{border-bottom:none;}
+.h-row:hover{background:#f4fff6;}
+.h-info{flex:1;min-width:0;}
+.h-name{font-size:13px;font-weight:600;color:#0d2210;}
+.h-meta{font-size:10.5px;color:#6a9070;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.h-del{width:26px;height:26px;border-radius:6px;background:#e8f0e8;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ── 토스트 ── */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(13,31,60,.88);color:#fff;padding:10px 20px;border-radius:20px;font-size:12px;font-weight:600;pointer-events:none;opacity:0;transition:opacity .3s;z-index:500;white-space:nowrap;}
+.toast.show{opacity:1;}
+
+/* ── 출처 배지 ── */
+.source-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;margin-left:8px;}
+.src-treatment{background:#dbeeff;color:#0d1f3c;}
+.src-clinic{background:#d1fae5;color:#065f46;}
+.src-event{background:#fce8ed;color:#5a1028;}
+
+/* ── 인쇄 오버레이 ── */
+.print-overlay{display:none;position:fixed;inset:0;background:rgba(5,15,30,.65);z-index:300;align-items:center;justify-content:center;}
+.print-overlay.open{display:flex;}
+.print-modal{background:#fff;border-radius:20px;padding:28px 28px 22px;width:320px;box-shadow:0 20px 60px rgba(0,0,0,.25);}
+.print-modal-title{font-family:'Noto Serif KR',serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.print-modal-desc{font-size:11.5px;color:#6a80a0;margin-bottom:18px;line-height:1.6;}
+.print-options{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.print-opt-btn{height:50px;border-radius:12px;border:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:0 16px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;}
+.print-opt-patient{background:linear-gradient(135deg,#0369a1,#0891b2);color:#fff;}
+.print-opt-icon{width:26px;height:26px;background:rgba(255,255,255,.2);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.print-opt-label{font-size:13px;font-weight:700;}
+.print-opt-sub{font-size:10px;font-weight:400;opacity:.8;margin-top:1px;}
+.print-cancel{width:100%;height:40px;border-radius:10px;border:1.5px solid #c0d0e8;background:#fff;color:#4a6080;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  .bottom-bar,.btn-back,.print-overlay,.toast{display:none!important;}
+  body{zoom:1;-moz-transform:none;}
+  .wrap{padding-bottom:0;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- 헤더 -->
+<div class="page-header">
+  <button class="btn-back" onclick="history.back()">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9L11 14" stroke="#0d1f3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <div class="page-title-wrap">
+    <div class="page-title">시술 동의서</div>
+    <div class="page-sub">빼 빼 한 의 원 &nbsp;·&nbsp; Consent Form</div>
+  </div>
+  <img src="logo-color.png" alt="빼빼한의원" style="height:32px;width:auto;">
+</div>
+
+<!-- ① 환자 기본정보 -->
+<div class="card">
+  <div class="sec-label">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2.5" stroke="#0d1f3c" stroke-width="1.4"/><line x1="4" y1="5" x2="10" y2="5" stroke="#0d1f3c" stroke-width="1.2" stroke-linecap="round"/><line x1="4" y1="7.5" x2="10" y2="7.5" stroke="#0d1f3c" stroke-width="1.2" stroke-linecap="round"/><line x1="4" y1="10" x2="7" y2="10" stroke="#0d1f3c" stroke-width="1.2" stroke-linecap="round"/></svg>
+    환자 기본정보
+  </div>
+  <div class="info-grid">
+    <div class="info-item">
+      <div class="info-label">차트번호</div>
+      <div class="info-value" id="disp-chart"><span class="empty">미입력</span></div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">날짜</div>
+      <div class="info-value" id="disp-date"><span class="empty">미입력</span></div>
+    </div>
+    <div class="info-item" style="grid-column:1/-1;">
+      <div class="info-label">환자 성명</div>
+      <div class="info-value" id="disp-name" style="font-size:16px;"><span class="empty">미입력</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ② 시술 선택 내역 -->
+<div class="card">
+  <div class="sec-label">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4h10M2 7h7M2 10h5" stroke="#0d1f3c" stroke-width="1.4" stroke-linecap="round"/></svg>
+    선택된 시술
+    <span class="source-badge src-treatment" id="source-badge" style="display:none;"></span>
+  </div>
+  <div class="treatment-tags" id="treatment-tags">
+    <span class="no-tag">연결된 시술 정보가 없습니다</span>
+  </div>
+</div>
+
+<!-- ③ 피부 시술 공통 고지사항 -->
+<div class="card">
+  <div class="sec-label">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#0d1f3c" stroke-width="1.4"/><line x1="7" y1="5" x2="7" y2="7.5" stroke="#0d1f3c" stroke-width="1.4" stroke-linecap="round"/><circle cx="7" cy="10" r=".7" fill="#0d1f3c"/></svg>
+    피부 시술 공통 고지사항
+  </div>
+
+  <div class="notice-group">
+    <div class="notice-group-title">📋 부작용 및 경과</div>
+    <div class="notice-list">
+      <div class="notice-item"><span class="notice-num">1</span><span>시술 후 일시적인 홍반·부종·멍·색소침착이 나타날 수 있으며 대부분 수일~수주 내 자연 소실됩니다.</span></div>
+      <div class="notice-item"><span class="notice-num">2</span><span>시술 효과는 개인의 체질·피부 상태·생활 습관에 따라 다르며 <span class="notice-highlight">특정 결과를 보장하지 않습니다.</span></span></div>
+      <div class="notice-item"><span class="notice-num">3</span><span>콜라겐 재생을 통한 시술(하이푸·고주파 등)은 효과 발현까지 1~3개월이 소요될 수 있습니다.</span></div>
+      <div class="notice-item"><span class="notice-num">4</span><span>반복 시술이 필요할 수 있으며, 담당 원장의 안내에 따라 주기를 결정합니다.</span></div>
+    </div>
+  </div>
+
+  <div class="notice-group">
+    <div class="notice-group-title">⚠️ 시술 전 반드시 고지하셔야 할 사항</div>
+    <div class="notice-list">
+      <div class="notice-item"><span class="notice-num">1</span><span>임신 중이거나 임신 가능성이 있는 경우</span></div>
+      <div class="notice-item"><span class="notice-num">2</span><span>체내 금속 보형물·심박조율기·인공 전자장치가 있는 경우</span></div>
+      <div class="notice-item"><span class="notice-num">3</span><span>과거 약물·봉독·주사제 알레르기 반응 이력이 있는 경우</span></div>
+      <div class="notice-item"><span class="notice-num">4</span><span>항응고제(아스피린·와파린 등)·스테로이드·면역억제제를 복용 중인 경우</span></div>
+      <div class="notice-item"><span class="notice-num">5</span><span>켈로이드 체질·혈액응고 장애·악성종양·갑상선 질환이 있는 경우</span></div>
+      <div class="notice-item"><span class="notice-num">6</span><span>최근 타 의료기관에서 필러·보톡스·레이저 등 시술을 받은 경우</span></div>
+    </div>
+  </div>
+
+  <div class="notice-group" style="margin-bottom:0;">
+    <div class="notice-group-title">✅ 시술 후 주의사항</div>
+    <div class="notice-list">
+      <div class="notice-item"><span class="notice-num">1</span><span>시술 당일 사우나·열탕·격렬한 운동·음주는 삼가십시오.</span></div>
+      <div class="notice-item"><span class="notice-num">2</span><span>시술 부위를 강하게 문지르거나 마사지하지 마십시오.</span></div>
+      <div class="notice-item"><span class="notice-num">3</span><span>레이저 시술 후에는 <span class="notice-highlight">자외선 차단제 사용이 필수</span>입니다.</span></div>
+      <div class="notice-item"><span class="notice-num">4</span><span>심한 통증·발진·발열이 지속되면 즉시 내원하십시오.</span></div>
+      <div class="notice-item"><span class="notice-num">5</span><span>누락·허위 병력 고지로 인한 부작용은 환자 본인이 책임집니다.</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ④ 동의 항목 -->
+<div class="card">
+  <div class="sec-label">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 4" stroke="#0d1f3c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    동의 항목
+  </div>
+
+  <div class="agree-item">
+    <div class="agree-check required-check" id="chk-privacy" onclick="toggleCheck('chk-privacy',true)">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5L5.5 10L11 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="agree-body">
+      <div class="agree-title">개인정보 수집·이용 동의 <span class="sec-badge badge-required">필수</span></div>
+      <div class="agree-desc">수집항목: 성명·생년월일·연락처·진료기록<br>수집목적: 진료·시술 기록 관리 및 사후 관리 연락<br>보유기간: 진료 종료 후 5년 (의료법 기준)</div>
+    </div>
+  </div>
+
+  <div class="agree-item">
+    <div class="agree-check required-check" id="chk-photo" onclick="toggleCheck('chk-photo',true)">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5L5.5 10L11 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="agree-body">
+      <div class="agree-title">임상 사진 촬영 동의 <span class="sec-badge badge-required">필수</span></div>
+      <div class="agree-desc">시술 경과 확인을 위해 시술 전·후 사진을 촬영하며,<br>촬영된 사진은 진료 기록 목적으로만 사용됩니다.</div>
+    </div>
+  </div>
+
+  <div class="agree-item">
+    <div class="agree-check required-check" id="chk-refund" onclick="toggleCheck('chk-refund',true)">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5L5.5 10L11 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="agree-body">
+      <div class="agree-title">환불 정책 확인 <span class="sec-badge badge-required">필수</span></div>
+      <div class="agree-desc">소비자분쟁해결기준(공정거래위원회 고시) 적용<br>시행된 시술 횟수는 환불 계산 시 정가 기준으로 차감됩니다.<br>의료적 사유에 의한 중도 해지 시 잔여 횟수 전액 환불됩니다.</div>
+    </div>
+  </div>
+
+  <div class="agree-item">
+    <div class="agree-check" id="chk-sns" onclick="toggleCheck('chk-sns',false)">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5L5.5 10L11 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="agree-body">
+      <div class="agree-title">SNS·홍보물 활용 동의 <span class="sec-badge badge-optional">선택</span></div>
+      <div class="agree-desc">치료 경과 사진 및 사례를 원장 SNS·홈페이지·홍보물에 활용할 수 있습니다.<br>비식별 처리 원칙이며 언제든지 동의를 철회하실 수 있습니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑤ 서명 -->
+<div class="card">
+  <div class="sec-label">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 12C4 10 6 8 7 6C8 4 8 2.5 7 2C6 1.5 5 3 5 5C5 7 6 9 8 10C10 11 12 10 12 9" stroke="#0d1f3c" stroke-width="1.4" stroke-linecap="round"/></svg>
+    서명
+  </div>
+  <p style="font-size:11.5px;color:#4a5a70;line-height:1.8;margin-bottom:14px;padding:10px 12px;background:#f8fafb;border-radius:8px;border-left:3px solid var(--accent);">
+    저는 위의 고지사항을 충분히 읽고 이해하였으며, 담당 원장으로부터 시술의 목적·방법·효과·부작용에 대해 충분한 설명을 들었습니다. 이에 <strong>자발적으로 동의</strong>합니다.
+  </p>
+
+  <div class="sign-grid">
+    <!-- 환자 서명 -->
+    <div>
+      <div class="sig-label">환자 서명</div>
+      <canvas id="sig-canvas-patient" class="sig-canvas"></canvas>
+      <div class="sig-btns">
+        <button class="sig-btn sig-btn-clear" onclick="clearSig('patient')">지우기</button>
+        <button class="sig-btn sig-btn-save" id="sig-save-btn-patient" onclick="saveSig('patient')">서명 저장</button>
+      </div>
+      <div class="sig-saved-wrap" id="sig-saved-patient" style="display:none;">
+        <div class="sig-saved-label">✅ 환자 서명 완료</div>
+        <img id="sig-img-patient" class="sig-saved-img">
+        <button class="sig-btn sig-btn-clear" onclick="clearSavedSig('patient')" style="margin-top:6px;font-size:10px;">다시 받기</button>
+      </div>
+    </div>
+
+    <!-- 보호자 서명 -->
+    <div>
+      <div class="sig-label">보호자 서명 <span style="font-size:9px;color:#aab;">(해당 시)</span></div>
+      <canvas id="sig-canvas-guardian" class="sig-canvas"></canvas>
+      <div class="sig-btns">
+        <button class="sig-btn sig-btn-clear" onclick="clearSig('guardian')">지우기</button>
+        <button class="sig-btn sig-btn-save" id="sig-save-btn-guardian" onclick="saveSig('guardian')">서명 저장</button>
+      </div>
+      <div class="sig-saved-wrap" id="sig-saved-guardian" style="display:none;">
+        <div class="sig-saved-label">✅ 보호자 서명 완료</div>
+        <img id="sig-img-guardian" class="sig-saved-img">
+        <button class="sig-btn sig-btn-clear" onclick="clearSavedSig('guardian')" style="margin-top:6px;font-size:10px;">다시 받기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 저장 기록 -->
+<div class="history-wrap">
+  <div class="history-head">
+    <span class="history-head-title">저 장 기 록</span>
+    <span class="history-cnt" id="h-cnt">0건</span>
+  </div>
+  <div class="history-list" id="h-list"><div class="history-empty">저장된 기록이 없습니다</div></div>
+</div>
+
+</div><!-- /wrap -->
+
+<!-- 하단 버튼 -->
+<div class="bottom-bar">
+  <button class="btn btn-home" onclick="location.href='index.html'">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8L8 2L14 8" stroke="#0d1f3c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 8V14H12V8" stroke="#0d1f3c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    홈
+  </button>
+  <button class="btn btn-reset" onclick="resetConsent()">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5a4.5 4.5 0 1 1 1.3 3.2" stroke="#4a6080" stroke-width="1.5" stroke-linecap="round"/><polyline points="2,3.5 2,6.5 5,6.5" stroke="#4a6080" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    초기화
+  </button>
+  <button class="btn btn-save" onclick="saveConsent()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2.5" stroke="white" stroke-width="1.5"/><path d="M5 8.5L7 10.5L11 6" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    저장하기
+  </button>
+  <button class="btn btn-print" onclick="openPrintModal()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="5" width="12" height="8" rx="1.5" stroke="white" stroke-width="1.4"/><path d="M5 5V2H11V5" stroke="white" stroke-width="1.4" stroke-linecap="round"/><rect x="5" y="9" width="6" height="2.5" rx=".6" fill="white"/><circle cx="11.5" cy="7.5" r=".8" fill="white"/></svg>
+    인쇄하기
+  </button>
+</div>
+
+<!-- 인쇄 모달 -->
+<div class="print-overlay" id="print-overlay" onclick="closePrintModal(event)">
+  <div class="print-modal">
+    <div class="print-modal-title">인쇄 옵션</div>
+    <div class="print-modal-desc">동의서를 인쇄합니다. 서명이 저장된 경우 포함됩니다.</div>
+    <div class="print-options">
+      <button class="print-opt-btn print-opt-patient" onclick="doPrint()">
+        <div class="print-opt-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="12" height="14" rx="2" stroke="white" stroke-width="1.4"/><line x1="5" y1="5" x2="11" y2="5" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="5" y1="8" x2="11" y2="8" stroke="white" stroke-width="1.2" stroke-linecap="round"/><line x1="5" y1="11" x2="8" y2="11" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+        <div><div class="print-opt-label">동의서 인쇄</div><div class="print-opt-sub">고지사항 + 동의항목 + 서명 포함</div></div>
+      </button>
+    </div>
+    <button class="print-cancel" onclick="document.getElementById('print-overlay').classList.remove('open')">취소</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── 데이터 로드 ──────────────────────────────
+var consentData = null;
+var CONSENT_STORE = 'bbaebbae_consent_v1';
+
+function loadConsentData(){
+  try {
+    var raw = localStorage.getItem('bbaebbae_consent_temp');
+    if(raw) consentData = JSON.parse(raw);
+  } catch(e){}
+}
+
+function renderPatientInfo(){
+  if(!consentData) return;
+  var c = consentData;
+
+  var chartEl = document.getElementById('disp-chart');
+  var dateEl = document.getElementById('disp-date');
+  var nameEl = document.getElementById('disp-name');
+
+  chartEl.innerHTML = c.chart ? c.chart : '<span style="color:#c0cce0;font-size:12px;">미입력</span>';
+  dateEl.innerHTML = c.date ? c.date.replace(/-/g,'.') : '<span style="color:#c0cce0;font-size:12px;">미입력</span>';
+  nameEl.innerHTML = c.name ? '<strong>'+c.name+'</strong> 님' : '<span style="color:#c0cce0;font-size:12px;">미입력</span>';
+}
+
+function itemLabel(it){
+  if(typeof it === 'string') return it;
+  return it.label || '';
+}
+function itemBadgeHtml(it){
+  if(typeof it === 'string') return '';
+  var html = '';
+  if(it.badge){
+    html += '<span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;display:inline-block;vertical-align:middle;background:'+it.badgeBg+';color:'+it.badgeCol+';margin-left:4px;">'+it.badge+'</span>';
+  }
+  if(it.badges && it.badges.length){
+    for(var b=0;b<it.badges.length;b++){
+      html += '<span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;display:inline-block;vertical-align:middle;background:'+it.badges[b].bg+';color:'+it.badges[b].col+';margin-left:4px;">'+it.badges[b].text+'</span>';
+    }
+  }
+  return html;
+}
+
+function renderTreatmentTags(){
+  var container = document.getElementById('treatment-tags');
+  var badge = document.getElementById('source-badge');
+  if(!consentData || !consentData.items || !consentData.items.length){
+    container.innerHTML = '<span class="no-tag">연결된 시술 정보가 없습니다</span>';
+    return;
+  }
+  var src = consentData.source || 'treatment';
+  var srcMap = {treatment:{label:'시술내역표',cls:'src-treatment'}, clinic:{label:'클리닉별상품',cls:'src-clinic'}, event:{label:'1회체험이벤트',cls:'src-event'}};
+  var s = srcMap[src] || srcMap.treatment;
+  badge.style.display = 'inline-flex';
+  badge.className = 'source-badge ' + s.cls;
+  badge.textContent = '▶ ' + s.label;
+
+  var html = '';
+  for(var i=0; i<consentData.items.length; i++){
+    html += '<span class="treatment-tag"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0d1f3c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'+itemLabel(consentData.items[i])+itemBadgeHtml(consentData.items[i])+'</span>';
+  }
+  container.innerHTML = html;
+}
+
+// ── 동의 체크 ──────────────────────────────
+var checks = {privacy:false, photo:false, refund:false, sns:false};
+function toggleCheck(id, required){
+  var key = id.replace('chk-','');
+  checks[key] = !checks[key];
+  var el = document.getElementById(id);
+  if(checks[key]){ el.classList.add('checked'); }
+  else { el.classList.remove('checked'); }
+}
+
+// ── 서명 패드 ──────────────────────────────
+var sigState = {
+  patient: {canvas:null, ctx:null, drawing:false, hasMark:false, saved:null},
+  guardian:{canvas:null, ctx:null, drawing:false, hasMark:false, saved:null}
+};
+
+function initSig(type){
+  var canvas = document.getElementById('sig-canvas-'+type);
+  if(!canvas) return;
+  var s = sigState[type];
+  s.canvas = canvas;
+  var rect = canvas.getBoundingClientRect();
+  if(rect.width > 0){
+    canvas.width = rect.width * window.devicePixelRatio;
+    canvas.height = rect.height * window.devicePixelRatio;
+    s.ctx = canvas.getContext('2d');
+    s.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    s.ctx.strokeStyle = '#0d1f3c'; s.ctx.lineWidth = 2.2; s.ctx.lineCap = 'round'; s.ctx.lineJoin = 'round';
+  }
+  canvas.addEventListener('touchstart',function(e){e.preventDefault();s.drawing=true;var t=e.touches[0];var r=canvas.getBoundingClientRect();s.ctx.beginPath();s.ctx.moveTo(t.clientX-r.left,t.clientY-r.top);},{passive:false});
+  canvas.addEventListener('touchmove',function(e){e.preventDefault();if(!s.drawing)return;s.hasMark=true;var t=e.touches[0];var r=canvas.getBoundingClientRect();s.ctx.lineTo(t.clientX-r.left,t.clientY-r.top);s.ctx.stroke();},{passive:false});
+  canvas.addEventListener('touchend',function(e){e.preventDefault();s.drawing=false;},{passive:false});
+  canvas.addEventListener('mousedown',function(e){s.drawing=true;var r=canvas.getBoundingClientRect();s.ctx.beginPath();s.ctx.moveTo(e.clientX-r.left,e.clientY-r.top);});
+  canvas.addEventListener('mousemove',function(e){if(!s.drawing)return;s.hasMark=true;var r=canvas.getBoundingClientRect();s.ctx.lineTo(e.clientX-r.left,e.clientY-r.top);s.ctx.stroke();});
+  canvas.addEventListener('mouseup',function(){s.drawing=false;});
+  canvas.addEventListener('mouseleave',function(){s.drawing=false;});
+}
+
+function clearSig(type){
+  var s = sigState[type];
+  if(!s.ctx) return;
+  s.ctx.clearRect(0,0,s.canvas.width,s.canvas.height);
+  s.hasMark = false;
+}
+
+function saveSig(type){
+  var s = sigState[type];
+  if(!s.hasMark){ showToast('서명을 먼저 해주세요'); return; }
+  s.saved = s.canvas.toDataURL('image/png');
+  document.getElementById('sig-img-'+type).src = s.saved;
+  document.getElementById('sig-saved-'+type).style.display = 'block';
+  s.canvas.style.display = 'none';
+  document.getElementById('sig-save-btn-'+type).style.display = 'none';
+  showToast(type==='patient'?'환자 서명이 저장됐습니다':'보호자 서명이 저장됐습니다');
+}
+
+function clearSavedSig(type){
+  var s = sigState[type];
+  s.saved = null;
+  document.getElementById('sig-saved-'+type).style.display = 'none';
+  s.canvas.style.display = 'block';
+  document.getElementById('sig-save-btn-'+type).style.display = 'inline-flex';
+  clearSig(type);
+}
+
+// ── 저장 ──────────────────────────────
+function saveConsent(){
+  if(!consentData || !consentData.name){ showToast('환자 정보가 없습니다. 시술내역 페이지에서 이동해주세요.'); return; }
+  if(!checks.privacy || !checks.photo || !checks.refund){ showToast('필수 동의 항목을 모두 체크해주세요'); return; }
+
+  var s = sigState.patient;
+  if(s.hasMark && !s.saved){ s.saved = s.canvas.toDataURL('image/png'); }
+
+  var all = [];
+  try{ all = JSON.parse(localStorage.getItem(CONSENT_STORE)||'[]'); }catch(e){}
+
+  var rec = {
+    id: Date.now(),
+    chart: consentData.chart||'',
+    name: consentData.name||'',
+    date: consentData.date||'',
+    source: consentData.source||'',
+    items: consentData.items||[],
+    checks: {privacy:checks.privacy, photo:checks.photo, refund:checks.refund, sns:checks.sns},
+    sigPatient: sigState.patient.saved||null,
+    sigGuardian: sigState.guardian.saved||null,
+    savedAt: new Date().toISOString()
+  };
+
+  var idx = -1;
+  for(var i=0;i<all.length;i++){ if(all[i].name===rec.name && all[i].date===rec.date){ idx=i; break; } }
+  if(idx>=0){ all[idx]=rec; showToast('동의서를 업데이트했습니다'); }
+  else{ all.unshift(rec); showToast('동의서가 저장됐습니다 : '+rec.name); }
+
+  try{ localStorage.setItem(CONSENT_STORE, JSON.stringify(all)); renderHistory(); }catch(e){ showToast('저장 실패'); }
+}
+
+// ── 인쇄 ──────────────────────────────
+var PS='<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:"Noto Sans KR",sans-serif;background:#fff;padding:10mm 12mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;}@page{size:A4 portrait;margin:0;}.pw-bar{position:fixed;top:0;left:0;right:0;background:#fff;border-bottom:1px solid #bbf7d0;padding:8px 16px;display:flex;gap:8px;justify-content:flex-end;z-index:9999;}.pw-btn{height:36px;padding:0 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:sans-serif;}.pw-btn-close{background:#e0faf2;color:#0d2210;}.pw-btn-home{background:linear-gradient(135deg,#0d2210,#166534);color:#fff;}body.has-bar{padding-top:56px;}@media print{.pw-bar{display:none!important;}body.has-bar{padding-top:10mm;}}</style>';
+
+function openPrintModal(){ document.getElementById('print-overlay').classList.add('open'); }
+function closePrintModal(e){ if(e.target===document.getElementById('print-overlay')) document.getElementById('print-overlay').classList.remove('open'); }
+
+function doPrint(){
+  document.getElementById('print-overlay').classList.remove('open');
+  if(!consentData){ showToast('환자 정보가 없습니다'); return; }
+
+  var info = consentData;
+  var dateDisp = (info.date||'').replace(/-/g,'.');
+  var items = info.items||[];
+  var sp = sigState.patient;
+  var sg = sigState.guardian;
+  if(sp.hasMark && !sp.saved) sp.saved = sp.canvas.toDataURL('image/png');
+  if(sg.hasMark && !sg.saved) sg.saved = sg.canvas.toDataURL('image/png');
+
+  var tagHtml = '';
+  for(var i=0;i<items.length;i++){
+    var it = items[i];
+    var lbl = itemLabel(it);
+    var bHtml = '';
+    if(typeof it === 'object'){
+      if(it.badge) bHtml += '<span style="font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:9px;display:inline-block;vertical-align:middle;background:'+it.badgeBg+';color:'+it.badgeCol+';margin-left:4px;-webkit-print-color-adjust:exact;print-color-adjust:exact;">'+it.badge+'</span>';
+      if(it.badges) for(var b=0;b<it.badges.length;b++) bHtml += '<span style="font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:9px;display:inline-block;vertical-align:middle;background:'+it.badges[b].bg+';color:'+it.badges[b].col+';margin-left:4px;-webkit-print-color-adjust:exact;print-color-adjust:exact;">'+it.badges[b].text+'</span>';
+    }
+    tagHtml+='<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#dbeeff;border:1px solid #b8d8f8;border-radius:16px;font-size:11px;font-weight:700;color:#0d1f3c;margin:2px;-webkit-print-color-adjust:exact;print-color-adjust:exact;">✔ '+lbl+bHtml+'</span>';
+  }
+  if(!tagHtml) tagHtml='<span style="font-size:11px;color:#aaa;">선택된 시술 없음</span>';
+
+  var chkHtml = function(checked){ return '<span style="display:inline-block;width:13px;height:13px;border:1.5px solid #0369a1;border-radius:3px;background:'+(checked?'#0369a1':'transparent')+';margin-right:7px;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact;">'+(checked?'<svg viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 6.5L5.5 10L11 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+'</span>'; };
+
+  var content = PS
+    +'<div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;">'
+    // 헤더
+    +'<div style="background:linear-gradient(135deg,#0d2210,#166534);border-radius:10px;padding:14px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">'
+    +'<div><div style="font-size:9px;letter-spacing:.4em;color:rgba(180,240,200,.7);font-family:sans-serif;margin-bottom:3px;">빼 빼 한 의 원</div>'
+    +'<div style="font-family:serif;font-size:18px;font-weight:900;color:#fff;">피부 시술 동의서</div></div>'
+    +'<div style="text-align:right;color:#fff;">'
+    +'<div style="font-size:10px;opacity:.7;">'+dateDisp+(info.chart?' · 차트 '+info.chart:'')+'</div>'
+    +'<div style="font-family:serif;font-size:16px;font-weight:700;">'+info.name+' 님</div></div></div>'
+    // 시술 선택
+    +'<div style="border:1px solid #d0e4f5;border-radius:10px;padding:10px 14px;margin-bottom:12px;">'
+    +'<div style="font-size:10px;font-weight:700;color:#0369a1;letter-spacing:.1em;margin-bottom:8px;">선택된 시술</div>'
+    +'<div>'+tagHtml+'</div></div>'
+    // 고지사항
+    +'<div style="border:1px solid #e0e8f0;border-radius:10px;padding:12px 14px;margin-bottom:12px;">'
+    +'<div style="font-size:11px;font-weight:700;color:#0d1f3c;margin-bottom:8px;letter-spacing:.06em;">피부 시술 공통 고지사항</div>'
+    // 부작용
+    +'<div style="background:#f0f4ff;padding:5px 9px;border-radius:6px;font-size:10px;font-weight:700;color:#0d1f3c;margin-bottom:6px;">📋 부작용 및 경과</div>'
+    +'<div style="font-size:10.5px;color:#334;line-height:1.7;padding-left:4px;margin-bottom:8px;">'
+    +'1. 시술 후 일시적인 홍반·부종·멍·색소침착이 나타날 수 있으며 대부분 수일~수주 내 자연 소실됩니다.<br>'
+    +'2. 시술 효과는 개인의 체질·피부 상태·생활 습관에 따라 다르며 특정 결과를 보장하지 않습니다.<br>'
+    +'3. 콜라겐 재생 시술(하이푸·고주파 등)은 효과 발현까지 1~3개월이 소요될 수 있습니다.<br>'
+    +'4. 반복 시술이 필요할 수 있으며, 담당 원장의 안내에 따라 주기를 결정합니다.</div>'
+    // 사전 고지
+    +'<div style="background:#f0f4ff;padding:5px 9px;border-radius:6px;font-size:10px;font-weight:700;color:#0d1f3c;margin-bottom:6px;">⚠️ 시술 전 반드시 고지하셔야 할 사항</div>'
+    +'<div style="font-size:10.5px;color:#334;line-height:1.7;padding-left:4px;margin-bottom:8px;">'
+    +'1. 임신 중이거나 임신 가능성이 있는 경우 &nbsp; 2. 체내 금속 보형물·심박조율기·인공 전자장치가 있는 경우<br>'
+    +'3. 과거 약물·봉독·주사제 알레르기 이력이 있는 경우 &nbsp; 4. 항응고제·스테로이드·면역억제제 복용 중인 경우<br>'
+    +'5. 켈로이드 체질·혈액응고 장애·악성종양·갑상선 질환이 있는 경우 &nbsp; 6. 최근 타 기관 시술을 받은 경우</div>'
+    // 주의사항
+    +'<div style="background:#f0f4ff;padding:5px 9px;border-radius:6px;font-size:10px;font-weight:700;color:#0d1f3c;margin-bottom:6px;">✅ 시술 후 주의사항</div>'
+    +'<div style="font-size:10.5px;color:#334;line-height:1.7;padding-left:4px;">'
+    +'1. 시술 당일 사우나·열탕·격렬한 운동·음주는 삼가십시오. &nbsp; 2. 시술 부위를 강하게 문지르거나 마사지하지 마십시오.<br>'
+    +'3. 레이저 시술 후에는 자외선 차단제 사용이 필수입니다. &nbsp; 4. 심한 통증·발진·발열이 지속되면 즉시 내원하십시오.</div>'
+    +'</div>'
+    // 동의항목
+    +'<div style="border:1px solid #e0e8f0;border-radius:10px;padding:10px 14px;margin-bottom:12px;">'
+    +'<div style="font-size:11px;font-weight:700;color:#0d1f3c;margin-bottom:8px;letter-spacing:.06em;">동의 항목</div>'
+    +'<div style="font-size:11px;color:#334;line-height:2;">'
+    +chkHtml(checks.privacy)+'<strong>개인정보 수집·이용 동의 (필수)</strong> — 수집항목: 성명·생년월일·연락처·진료기록 / 보유기간: 5년<br>'
+    +chkHtml(checks.photo)+'<strong>임상 사진 촬영 동의 (필수)</strong> — 진료 기록 목적의 시술 전·후 사진 촬영에 동의합니다.<br>'
+    +chkHtml(checks.refund)+'<strong>환불 정책 확인 (필수)</strong> — 소비자분쟁해결기준 적용, 시행 횟수는 정가 기준 차감<br>'
+    +chkHtml(checks.sns)+'<strong>SNS·홍보물 활용 동의 (선택)</strong> — 비식별 처리 원칙, 언제든 철회 가능'
+    +'</div></div>'
+    // 서명
+    +'<div style="border:1.5px solid #c8dff0;border-radius:12px;padding:14px 16px;">'
+    +'<div style="font-size:12px;font-weight:700;color:#0d1f3c;margin-bottom:6px;">서명</div>'
+    +'<div style="font-size:10.5px;color:#4a5a70;margin-bottom:14px;padding:8px 10px;background:#f8fafb;border-radius:6px;border-left:3px solid #0369a1;">저는 위의 고지사항을 충분히 읽고 이해하였으며, 담당 원장으로부터 시술의 목적·방법·효과·부작용에 대해 충분한 설명을 들었습니다. 이에 <strong>자발적으로 동의</strong>합니다.</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'
+    +'<div><div style="font-size:10px;color:#99aabb;margin-bottom:4px;">날 짜</div><div style="border-bottom:1.5px solid #c0cfe0;padding-bottom:4px;font-size:12px;">'+dateDisp+'</div></div>'
+    +'<div><div style="font-size:10px;color:#99aabb;margin-bottom:4px;">환자 성명</div><div style="border-bottom:1.5px solid #c0cfe0;padding-bottom:4px;font-size:12px;">'+info.name+'</div></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">'
+    +'<div><div style="font-size:10px;color:#99aabb;margin-bottom:6px;">환자 서명</div>'
+    +(sp.saved?'<img src="'+sp.saved+'" style="max-width:100%;height:70px;border:1px solid #c8dff0;border-radius:6px;background:#fff;">'
+    :'<div style="border-bottom:1.5px solid #c0cfe0;margin-top:20px;"></div>')+'</div>'
+    +'<div><div style="font-size:10px;color:#99aabb;margin-bottom:6px;">보호자 서명 (해당 시)</div>'
+    +(sg.saved?'<img src="'+sg.saved+'" style="max-width:100%;height:70px;border:1px solid #c8dff0;border-radius:6px;background:#fff;">'
+    :'<div style="border-bottom:1.5px solid #c0cfe0;margin-top:20px;"></div>')+'</div>'
+    +'</div></div>'
+    +'<div style="text-align:center;margin-top:12px;font-size:9px;color:#c0d0e0;letter-spacing:.2em;">빼 빼 한 의 원 &nbsp;·&nbsp; 다이어트 · 스킨 클리닉 &nbsp;·&nbsp; 02-2038-2114</div>'
+    +'</div>';
+
+  var pw = window.open('', '_blank', 'width=800,height=1000,scrollbars=yes,resizable=yes');
+  if(!pw){ showToast('팝업이 차단됐습니다. 허용 후 다시 시도해주세요.'); return; }
+  var bar='<div class="pw-bar"><button class="pw-btn pw-btn-close" onclick="window.close()">✕ 닫기</button><button class="pw-btn pw-btn-home" onclick="window.opener?window.opener.focus():null;window.close();">홈으로</button></div>';
+  var penOv=window.penGetOverlayDataURL?window.penGetOverlayDataURL():null;
+  var penHtml=penOv?'<img src="'+penOv+'" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1000;" />':'';
+  pw.document.open(); pw.document.write(content.replace('<body>','<body class="has-bar">').replace(PS,PS+bar).replace('</body>',penHtml+'</body>')); pw.document.close();
+  pw.document.title = '(동)_'+(info.name||'')+'_'+dateDisp;
+  pw.onload = function(){ pw.print(); };
+  setTimeout(function(){ try{ pw.print(); }catch(e){} }, 600);
+}
+
+// ── 토스트 ──────────────────────────────
+var _tt;
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(_tt); _tt=setTimeout(function(){ t.classList.remove('show'); }, 2400);
+}
+
+// ── 저장 기록 ──────────────────────────────
+function getAllConsent(){try{return JSON.parse(localStorage.getItem(CONSENT_STORE)||'[]');}catch(e){return[];}}
+
+function renderHistory(){
+  var all = getAllConsent();
+  document.getElementById('h-cnt').textContent = all.length+'건';
+  var list = document.getElementById('h-list');
+  if(!all.length){ list.innerHTML='<div class="history-empty">저장된 기록이 없습니다</div>'; return; }
+  var html = '';
+  for(var i=0;i<all.length;i++){
+    var r = all[i];
+    var ds = (r.date||'').replace(/-/g,'.');
+    var its = [];
+    var items = r.items||[];
+    for(var j=0;j<items.length;j++){
+      var it = items[j];
+      its.push(typeof it==='object'?(it.label||''):it);
+    }
+    var meta = ds + (its.length?' | '+its.join(', '):'');
+    html += '<div class="h-row" onclick="loadRecord('+r.id+')">'
+      +'<div class="h-info"><div class="h-name">'+r.name+(r.chart?' · '+r.chart:'')+'</div>'
+      +'<div class="h-meta">'+meta+'</div></div>'
+      +'<button class="h-del" onclick="delRecord('+r.id+',event)">'
+      +'<svg width="11" height="11" viewBox="0 0 11 11" fill="none">'
+      +'<line x1="1.5" y1="1.5" x2="9.5" y2="9.5" stroke="#4a6080" stroke-width="1.8" stroke-linecap="round"/>'
+      +'<line x1="9.5" y1="1.5" x2="1.5" y2="9.5" stroke="#4a6080" stroke-width="1.8" stroke-linecap="round"/>'
+      +'</svg></button></div>';
+  }
+  list.innerHTML = html;
+}
+
+function delRecord(id, e){
+  if(e && e.stopPropagation) e.stopPropagation();
+  var all = getAllConsent().filter(function(r){ return r.id !== id; });
+  try{ localStorage.setItem(CONSENT_STORE, JSON.stringify(all)); }catch(ex){}
+  renderHistory(); showToast('삭제했습니다');
+}
+
+function loadRecord(id){
+  var all = getAllConsent();
+  var rec = null;
+  for(var i=0;i<all.length;i++){ if(all[i].id===id){ rec=all[i]; break; } }
+  if(!rec) return;
+  consentData = { chart:rec.chart, name:rec.name, date:rec.date, source:rec.source, items:rec.items };
+  renderPatientInfo();
+  renderTreatmentTags();
+  checks.privacy = rec.checks&&rec.checks.privacy||false;
+  checks.photo   = rec.checks&&rec.checks.photo||false;
+  checks.refund  = rec.checks&&rec.checks.refund||false;
+  checks.sns     = rec.checks&&rec.checks.sns||false;
+  ['privacy','photo','refund','sns'].forEach(function(k){
+    var el = document.getElementById('chk-'+k);
+    if(el){ if(checks[k]) el.classList.add('checked'); else el.classList.remove('checked'); }
+  });
+  if(rec.sigPatient){
+    sigState.patient.saved = rec.sigPatient;
+    document.getElementById('sig-img-patient').src = rec.sigPatient;
+    document.getElementById('sig-saved-patient').style.display = 'block';
+    document.getElementById('sig-canvas-patient').style.display = 'none';
+    document.getElementById('sig-save-btn-patient').style.display = 'none';
+  }
+  if(rec.sigGuardian){
+    sigState.guardian.saved = rec.sigGuardian;
+    document.getElementById('sig-img-guardian').src = rec.sigGuardian;
+    document.getElementById('sig-saved-guardian').style.display = 'block';
+    document.getElementById('sig-canvas-guardian').style.display = 'none';
+    document.getElementById('sig-save-btn-guardian').style.display = 'none';
+  }
+  showToast(rec.name+' 기록을 불러왔습니다');
+  window.scrollTo(0,0);
+}
+
+function resetConsent(){
+  consentData = null;
+  document.getElementById('disp-chart').innerHTML = '<span style="color:#c0cce0;font-size:12px;">미입력</span>';
+  document.getElementById('disp-date').innerHTML  = '<span style="color:#c0cce0;font-size:12px;">미입력</span>';
+  document.getElementById('disp-name').innerHTML  = '<span style="color:#c0cce0;font-size:12px;">미입력</span>';
+  document.getElementById('treatment-tags').innerHTML = '<span class="no-tag">연결된 시술 정보가 없습니다</span>';
+  document.getElementById('source-badge').style.display = 'none';
+  ['privacy','photo','refund','sns'].forEach(function(k){
+    checks[k] = false;
+    var el = document.getElementById('chk-'+k); if(el) el.classList.remove('checked');
+  });
+  clearSavedSig('patient'); clearSavedSig('guardian');
+  showToast('초기화했습니다');
+}
+
+// ── 초기화 ──────────────────────────────
+window.addEventListener('load', function(){
+  loadConsentData();
+  renderPatientInfo();
+  renderTreatmentTags();
+  renderHistory();
+  setTimeout(function(){
+    initSig('patient');
+    initSig('guardian');
+  }, 100);
+});
+</script>
+<!-- ═══ 빨간펜 오버레이 ═══ -->
+<script>
+(function(){
+
+  /* ── 모든 요소를 <html>에 직접 생성 (body zoom 완전 차단) ── */
+
+  /* 그리기 캔버스: 펜 ON일 때만 표시 */
+  var canvas = document.createElement('canvas');
+  canvas.id = 'pen-canvas';
+  canvas.setAttribute('style',[
+    'position:fixed','top:0','left:0',
+    'width:100%','height:100%',
+    'pointer-events:none',
+    'z-index:2147483646',
+    'display:none'
+  ].join(';'));
+  document.documentElement.appendChild(canvas);
+
+  /* 스냅샷 이미지: 펜 OFF + 필기 있을 때 표시 */
+  var snapImg = document.createElement('img');
+  snapImg.id = 'pen-snapshot';
+  snapImg.setAttribute('style',[
+    'position:fixed','top:0','left:0',
+    'width:100%','height:100%',
+    'pointer-events:none',
+    'z-index:2147483645',
+    'display:none'
+  ].join(';'));
+  document.documentElement.appendChild(snapImg);
+
+  /* FAB 버튼 */
+  var fab = document.createElement('button');
+  fab.id = 'pen-fab';
+  fab.innerHTML = '✏️';
+  fab.title = '빨간펜';
+  fab.setAttribute('style',[
+    'position:fixed','bottom:130px','right:16px',
+    'width:52px','height:52px','border-radius:50%',
+    'border:3px solid #fff','background:#e00','color:#fff',
+    'font-size:22px','box-shadow:0 3px 14px rgba(0,0,0,.4)',
+    'cursor:pointer','z-index:2147483647','display:block',
+    'padding:0','line-height:1','font-family:sans-serif'
+  ].join(';'));
+  document.documentElement.appendChild(fab);
+
+  /* 툴바 */
+  var toolbar = document.createElement('div');
+  toolbar.id = 'pen-toolbar';
+  toolbar.setAttribute('style',[
+    'position:fixed','bottom:130px','right:16px',
+    'z-index:2147483647','display:none',
+    'flex-direction:column','gap:8px','align-items:center'
+  ].join(';'));
+  toolbar.innerHTML =
+    '<button id="pen-toggle" style="width:52px;height:52px;border-radius:50%;border:3px solid #fff;background:#e00;color:#fff;font-size:22px;box-shadow:0 3px 14px rgba(0,0,0,.35);cursor:pointer;padding:0;">✏️</button>'
+   +'<button id="pen-erase" style="width:40px;height:40px;border-radius:50%;border:2px solid #fff;background:#555;color:#fff;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer;padding:0;">🗑</button>'
+   +'<button id="pen-undo"  style="width:40px;height:40px;border-radius:50%;border:2px solid #fff;background:#888;color:#fff;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer;padding:0;">↩</button>';
+  document.documentElement.appendChild(toolbar);
+
+  /* ── 상태 ── */
+  var ctx = null;
+  var penOn = false;
+  var drawing = false;
+  var strokes = [];
+  var currentStroke = null;
+  var snapScrollX = 0, snapScrollY = 0;  /* 스냅샷 촬영 시점의 스크롤 위치 */
+
+  /* ── 캔버스 초기화 ── */
+  function initCanvas(){
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    ctx = canvas.getContext('2d');
+    ctx.strokeStyle='#e00'; ctx.lineWidth=3; ctx.lineCap='round'; ctx.lineJoin='round';
+  }
+
+  /* ── 현재 스크롤 기준으로 캔버스에 다시 그리기 ── */
+  function redraw(){
+    if(!ctx) return;
+    var sx = window.pageXOffset||window.scrollX||0;
+    var sy = window.pageYOffset||window.scrollY||0;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle='#e00'; ctx.lineWidth=3; ctx.lineCap='round'; ctx.lineJoin='round';
+    for(var i=0;i<strokes.length;i++){
+      var pts=strokes[i].pts;
+      if(pts.length<2) continue;
+      ctx.beginPath(); ctx.moveTo(pts[0].px-sx, pts[0].py-sy);
+      for(var j=1;j<pts.length;j++) ctx.lineTo(pts[j].px-sx, pts[j].py-sy);
+      ctx.stroke();
+    }
+  }
+
+  /* ── 스냅샷: 현재 뷰포트를 img에 저장 ── */
+  function takeSnapshot(){
+    if(strokes.length===0){ snapImg.style.display='none'; return; }
+    snapScrollX = window.pageXOffset||window.scrollX||0;
+    snapScrollY = window.pageYOffset||window.scrollY||0;
+    /* 임시 캔버스에 현재 뷰포트 기준으로 렌더 */
+    var tmp = document.createElement('canvas');
+    tmp.width  = window.innerWidth;
+    tmp.height = window.innerHeight;
+    var tc = tmp.getContext('2d');
+    tc.strokeStyle='#e00'; tc.lineWidth=3; tc.lineCap='round'; tc.lineJoin='round';
+    var sx = window.pageXOffset||window.scrollX||0;
+    var sy = window.pageYOffset||window.scrollY||0;
+    for(var i=0;i<strokes.length;i++){
+      var pts=strokes[i].pts;
+      if(pts.length<2) continue;
+      tc.beginPath(); tc.moveTo(pts[0].px-sx, pts[0].py-sy);
+      for(var j=1;j<pts.length;j++) tc.lineTo(pts[j].px-sx, pts[j].py-sy);
+      tc.stroke();
+    }
+    snapImg.src = tmp.toDataURL('image/png');
+    snapImg.style.willChange = 'transform';
+    snapImg.style.transform = 'translate(0,0)';
+    snapImg.style.display = 'block';
+  }
+
+  /* ── 좌표: clientX/Y → 페이지 절대 좌표 ── */
+  function getPageXY(e, touch){
+    var src = touch||e;
+    return {
+      px: src.clientX + (window.pageXOffset||window.scrollX||0),
+      py: src.clientY + (window.pageYOffset||window.scrollY||0)
+    };
+  }
+
+  /* ── 터치/마우스 ── */
+  function onStart(e){
+    if(!penOn) return;
+    e.preventDefault(); e.stopPropagation();
+    drawing=true;
+    var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
+    currentStroke={pts:[pt]};
+    if(!ctx) initCanvas();
+    var sx=window.pageXOffset||0, sy=window.pageYOffset||0;
+    ctx.beginPath(); ctx.moveTo(pt.px-sx, pt.py-sy);
+  }
+  function onMove(e){
+    if(!penOn||!drawing) return;
+    e.preventDefault(); e.stopPropagation();
+    var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
+    currentStroke.pts.push(pt);
+    var sx=window.pageXOffset||0, sy=window.pageYOffset||0;
+    ctx.lineTo(pt.px-sx, pt.py-sy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pt.px-sx, pt.py-sy);
+  }
+  function onEnd(e){
+    if(!penOn||!drawing) return;
+    drawing=false;
+    if(currentStroke&&currentStroke.pts.length>0) strokes.push(currentStroke);
+    currentStroke=null;
+  }
+
+  canvas.addEventListener('touchstart',onStart,{passive:false});
+  canvas.addEventListener('touchmove', onMove, {passive:false});
+  canvas.addEventListener('touchend',  onEnd,  {passive:false});
+  canvas.addEventListener('mousedown', onStart);
+  canvas.addEventListener('mousemove', onMove);
+  canvas.addEventListener('mouseup',   onEnd);
+  canvas.addEventListener('mouseleave',onEnd);
+
+  /* 스크롤 시: 펜 ON → 캔버스 재렌더 / 펜 OFF → transform만 업데이트 (GPU, 부드러움) */
+  window.addEventListener('scroll', function(){
+    if(penOn){ redraw(); return; }
+    if(strokes.length===0) return;
+    var sx = window.pageXOffset||window.scrollX||0;
+    var sy = window.pageYOffset||window.scrollY||0;
+    snapImg.style.transform = 'translate('+(snapScrollX-sx)+'px,'+(snapScrollY-sy)+'px)';
+  }, {passive:true});
+
+  /* 리사이즈 */
+  window.addEventListener('resize', function(){
+    if(penOn){ initCanvas(); redraw(); }
+    else if(strokes.length>0) takeSnapshot();
+  });
+
+  /* ── 버튼 ── */
+  fab.onclick = function(){
+    fab.style.display='none';
+    toolbar.style.display='flex';
+  };
+
+  document.getElementById('pen-toggle').onclick = function(){
+    penOn=!penOn;
+    var btn=document.getElementById('pen-toggle');
+    if(penOn){
+      /* 펜 켬: 스냅샷 숨기고 캔버스 표시 */
+      snapImg.style.display='none';
+      initCanvas(); redraw();
+      canvas.style.display='block';
+      canvas.style.pointerEvents='auto';
+      btn.style.background='#b00'; btn.style.transform='scale(1.15)';
+    } else {
+      /* 펜 끔: 캔버스 숨기고 스냅샷 표시 */
+      canvas.style.pointerEvents='none';
+      canvas.style.display='none';
+      takeSnapshot();
+      btn.style.background='#e00'; btn.style.transform='scale(1)';
+    }
+  };
+
+  document.getElementById('pen-erase').onclick = function(){
+    strokes=[];
+    if(ctx) ctx.clearRect(0,0,canvas.width,canvas.height);
+    canvas.style.display='none';
+    snapImg.style.display='none';
+  };
+
+  document.getElementById('pen-undo').onclick = function(){
+    if(strokes.length>0){
+      strokes.pop();
+      if(penOn) redraw();
+      else takeSnapshot();
+    }
+  };
+
+  document.addEventListener('click',function(e){
+    if(!toolbar.contains(e.target)&&e.target!==fab){
+      if(!penOn){ toolbar.style.display='none'; fab.style.display='block'; }
+    }
+  });
+
+  /* ── 인쇄용 오버레이 ── */
+  window.penGetOverlayDataURL = function(){ return null; };
+
+  window.penToggleMode  = function(){ document.getElementById('pen-toggle').onclick(); };
+  window.penErase       = function(){ document.getElementById('pen-erase').onclick();  };
+  window.penUndoLast    = function(){ document.getElementById('pen-undo').onclick();   };
+  window.penOpenToolbar = function(){ fab.onclick(); };
+
+})();
+</script>
+
+</body>
+</html>
