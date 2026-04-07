@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>빼빼한의원 시술동의서</title>
 <link rel="manifest" href="manifest.json">
 <script>
@@ -645,7 +645,7 @@ function doPrint(){
   var penOv=window.penGetOverlayDataURL?window.penGetOverlayDataURL():null;
   var penHtml=penOv?'<img src="'+penOv+'" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1000;" />':'';
   pw.document.open(); pw.document.write(content.replace('<body>','<body class="has-bar">').replace(PS,PS+bar).replace('</body>',penHtml+'</body>')); pw.document.close();
-  pw.document.title = '(동)_'+(info.name||'')+'_'+dateDisp;
+  pw.document.title = '(동)'+(info.name||'')+' '+dateDisp;
   pw.onload = function(){ pw.print(); };
   setTimeout(function(){ try{ pw.print(); }catch(e){} }, 600);
 }
@@ -886,7 +886,7 @@ window.addEventListener('load', function(){
   /* ── 터치/마우스 ── */
   function onStart(e){
     if(!penOn) return;
-    e.preventDefault(); e.stopPropagation();
+    if(e.touches && e.touches.length > 1){ drawing=false; return; } /* 두 손가락 → 핀치줌 허용 */
     drawing=true;
     var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
     currentStroke={pts:[pt]};
@@ -896,7 +896,8 @@ window.addEventListener('load', function(){
   }
   function onMove(e){
     if(!penOn||!drawing) return;
-    e.preventDefault(); e.stopPropagation();
+    if(e.touches && e.touches.length > 1){ drawing=false; return; } /* 핀치줌 전환 시 드로잉 중단 */
+    e.preventDefault(); /* 한 손가락 드로잉 중 스크롤 방지 */
     var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
     currentStroke.pts.push(pt);
     var sx=window.pageXOffset||0, sy=window.pageYOffset||0;
@@ -910,9 +911,9 @@ window.addEventListener('load', function(){
     currentStroke=null;
   }
 
-  canvas.addEventListener('touchstart',onStart,{passive:false});
-  canvas.addEventListener('touchmove', onMove, {passive:false});
-  canvas.addEventListener('touchend',  onEnd,  {passive:false});
+  canvas.addEventListener('touchstart',onStart,{passive:true});  /* passive:true → 브라우저 핀치줌 허용 */
+  canvas.addEventListener('touchmove', onMove, {passive:false}); /* passive:false → 드로잉 중 스크롤 차단 */
+  canvas.addEventListener('touchend',  onEnd,  {passive:true});
   canvas.addEventListener('mousedown', onStart);
   canvas.addEventListener('mousemove', onMove);
   canvas.addEventListener('mouseup',   onEnd);

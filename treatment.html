@@ -1034,8 +1034,8 @@ function goConsent(){
   /* ── 터치/마우스 ── */
   function onStart(e){
     if(!penOn) return;
-    if(e.touches && e.touches.length > 1) return; /* 두 손가락 핀치줌 허용 */
-    e.preventDefault(); e.stopPropagation();
+    if(e.touches && e.touches.length > 1){ drawing=false; return; } /* 두 손가락 → 핀치줌 허용 */
+    /* touchstart는 passive로 등록 → preventDefault 불필요, 브라우저 줌 허용 */
     drawing=true;
     var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
     currentStroke={pts:[pt]};
@@ -1045,8 +1045,8 @@ function goConsent(){
   }
   function onMove(e){
     if(!penOn||!drawing) return;
-    if(e.touches && e.touches.length > 1){ drawing=false; return; } /* 핀치줌으로 전환 시 드로잉 중단 */
-    e.preventDefault(); e.stopPropagation();
+    if(e.touches && e.touches.length > 1){ drawing=false; return; } /* 핀치줌 전환 시 드로잉 중단 */
+    e.preventDefault(); /* 한 손가락 드로잉 중 스크롤 방지 */
     var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
     currentStroke.pts.push(pt);
     var vp=getVP();
@@ -1061,9 +1061,9 @@ function goConsent(){
     currentStroke=null;
   }
 
-  canvas.addEventListener('touchstart',onStart,{passive:false});
-  canvas.addEventListener('touchmove', onMove, {passive:false});
-  canvas.addEventListener('touchend',  onEnd,  {passive:false});
+  canvas.addEventListener('touchstart',onStart,{passive:true});  /* passive:true → 브라우저 핀치줌 허용 */
+  canvas.addEventListener('touchmove', onMove, {passive:false}); /* passive:false → 드로잉 중 스크롤 차단 */
+  canvas.addEventListener('touchend',  onEnd,  {passive:true});
   canvas.addEventListener('mousedown', onStart);
   canvas.addEventListener('mousemove', onMove);
   canvas.addEventListener('mouseup',   onEnd);
