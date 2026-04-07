@@ -1071,8 +1071,7 @@ function goConsent(){
 
   /* 스크롤/줌 변경 시 재렌더 */
   function onVPChange(){
-    if(penOn){ initCanvas(); redraw(); }
-    else if(strokes.length>0) takeSnapshot();
+    if(strokes.length>0){ if(!penOn) initCanvas(); redraw(); }
   }
   if(window.visualViewport){
     window.visualViewport.addEventListener('scroll', onVPChange);
@@ -1099,10 +1098,8 @@ function goConsent(){
       canvas.style.pointerEvents='auto';
       btn.style.background='#b00'; btn.style.transform='scale(1.15)';
     } else {
-      /* 펜 끔: 캔버스 숨기고 스냅샷 표시 */
+      /* 펜 끔: 포인터이벤트만 끄고 캔버스는 유지 */
       canvas.style.pointerEvents='none';
-      canvas.style.display='none';
-      takeSnapshot();
       btn.style.background='#e00'; btn.style.transform='scale(1)';
     }
   };
@@ -1111,7 +1108,11 @@ function goConsent(){
     strokes=[];
     if(ctx) ctx.clearRect(0,0,canvas.width,canvas.height);
     canvas.style.display='none';
+    canvas.style.pointerEvents='none';
     snapImg.style.display='none';
+    penOn=false;
+    var btn=document.getElementById('pen-toggle');
+    btn.style.background='#e00'; btn.style.transform='scale(1)';
   };
 
   document.getElementById('pen-undo').onclick = function(){

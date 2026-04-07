@@ -919,13 +919,10 @@ window.addEventListener('load', function(){
   canvas.addEventListener('mouseup',   onEnd);
   canvas.addEventListener('mouseleave',onEnd);
 
-  /* 스크롤 시: 펜 ON → 캔버스 재렌더 / 펜 OFF → transform만 업데이트 (GPU, 부드러움) */
+  /* 스크롤 시: 스트로크가 있으면 항상 캔버스 재렌더 */
   window.addEventListener('scroll', function(){
-    if(penOn){ redraw(); return; }
     if(strokes.length===0) return;
-    var sx = window.pageXOffset||window.scrollX||0;
-    var sy = window.pageYOffset||window.scrollY||0;
-    snapImg.style.transform = 'translate('+(snapScrollX-sx)+'px,'+(snapScrollY-sy)+'px)';
+    redraw();
   }, {passive:true});
 
   /* 리사이즈 */
@@ -951,10 +948,8 @@ window.addEventListener('load', function(){
       canvas.style.pointerEvents='auto';
       btn.style.background='#b00'; btn.style.transform='scale(1.15)';
     } else {
-      /* 펜 끔: 캔버스 숨기고 스냅샷 표시 */
+      /* 펜 끔: 포인터이벤트만 끄고 캔버스는 유지 */
       canvas.style.pointerEvents='none';
-      canvas.style.display='none';
-      takeSnapshot();
       btn.style.background='#e00'; btn.style.transform='scale(1)';
     }
   };
@@ -963,7 +958,11 @@ window.addEventListener('load', function(){
     strokes=[];
     if(ctx) ctx.clearRect(0,0,canvas.width,canvas.height);
     canvas.style.display='none';
+    canvas.style.pointerEvents='none';
     snapImg.style.display='none';
+    penOn=false;
+    var btn=document.getElementById('pen-toggle');
+    btn.style.background='#e00'; btn.style.transform='scale(1)';
   };
 
   document.getElementById('pen-undo').onclick = function(){
