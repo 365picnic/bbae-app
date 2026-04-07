@@ -961,77 +961,36 @@ function goConsent(){
   var strokes = [];
   var currentStroke = null;
 
-  /* ── 비주얼뷰포트 헬퍼 ── */
-  function getVP(){
-    if(window.visualViewport) return window.visualViewport;
-    return {scale:1, offsetLeft:window.scrollX||window.pageXOffset||0, offsetTop:window.scrollY||window.pageYOffset||0, width:window.innerWidth, height:window.innerHeight};
-  }
-
   /* ── 캔버스 초기화 ── */
   function initCanvas(){
-    var vp = getVP();
-    canvas.width  = Math.round(vp.width);
-    canvas.height = Math.round(vp.height);
-    canvas.style.width  = vp.width  + 'px';
-    canvas.style.height = vp.height + 'px';
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
     ctx = canvas.getContext('2d');
     ctx.strokeStyle='#e00'; ctx.lineWidth=3; ctx.lineCap='round'; ctx.lineJoin='round';
   }
 
-  /* ── 현재 뷰포트 기준으로 캔버스에 다시 그리기 ── */
+  /* ── 현재 스크롤 기준으로 캔버스에 다시 그리기 ── */
   function redraw(){
     if(!ctx) return;
-    var vp = getVP();
-    var sx = window.scrollX||window.pageXOffset||0;
-    var sy = window.scrollY||window.pageYOffset||0;
+    var sx = window.pageXOffset||window.scrollX||0;
+    var sy = window.pageYOffset||window.scrollY||0;
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.strokeStyle='#e00'; ctx.lineWidth=3; ctx.lineCap='round'; ctx.lineJoin='round';
     for(var i=0;i<strokes.length;i++){
       var pts=strokes[i].pts;
       if(pts.length<2) continue;
-      ctx.beginPath();
-      ctx.moveTo((pts[0].px-vp.offsetLeft-sx)*vp.scale, (pts[0].py-vp.offsetTop-sy)*vp.scale);
-      for(var j=1;j<pts.length;j++)
-        ctx.lineTo((pts[j].px-vp.offsetLeft-sx)*vp.scale, (pts[j].py-vp.offsetTop-sy)*vp.scale);
+      ctx.beginPath(); ctx.moveTo(pts[0].px-sx, pts[0].py-sy);
+      for(var j=1;j<pts.length;j++) ctx.lineTo(pts[j].px-sx, pts[j].py-sy);
       ctx.stroke();
     }
   }
 
-  /* ── 스냅샷: 현재 뷰포트를 img에 저장 ── */
-  function takeSnapshot(){
-    if(strokes.length===0){ snapImg.style.display='none'; return; }
-    var vp = getVP();
-    var tmp = document.createElement('canvas');
-    tmp.width  = Math.round(vp.width);
-    tmp.height = Math.round(vp.height);
-    var tc = tmp.getContext('2d');
-    tc.strokeStyle='#e00'; tc.lineWidth=3; tc.lineCap='round'; tc.lineJoin='round';
-    for(var i=0;i<strokes.length;i++){
-      var pts=strokes[i].pts;
-      if(pts.length<2) continue;
-      tc.beginPath();
-      tc.moveTo((pts[0].px-vp.offsetLeft)*vp.scale, (pts[0].py-vp.offsetTop)*vp.scale);
-      for(var j=1;j<pts.length;j++)
-        tc.lineTo((pts[j].px-vp.offsetLeft)*vp.scale, (pts[j].py-vp.offsetTop)*vp.scale);
-      tc.stroke();
-    }
-    snapImg.src = tmp.toDataURL('image/png');
-    snapImg.style.width  = vp.width  + 'px';
-    snapImg.style.height = vp.height + 'px';
-    snapImg.style.willChange = 'transform';
-    snapImg.style.transform = '';
-    snapImg.style.display = 'block';
-  }
-
-  /* ── 좌표: clientX/Y → 문서 절대 좌표 (줌 보정 + 스크롤 포함) ── */
+  /* ── 좌표: clientX/Y → 페이지 절대 좌표 ── */
   function getPageXY(e, touch){
     var src = touch||e;
-    var vp = getVP();
-    var sx = window.scrollX||window.pageXOffset||0;
-    var sy = window.scrollY||window.pageYOffset||0;
     return {
-      px: src.clientX / vp.scale + vp.offsetLeft + sx,
-      py: src.clientY / vp.scale + vp.offsetTop  + sy
+      px: src.clientX + (window.pageXOffset||window.scrollX||0),
+      py: src.clientY + (window.pageYOffset||window.scrollY||0)
     };
   }
 
@@ -1039,14 +998,12 @@ function goConsent(){
   function onStart(e){
     if(!penOn) return;
     if(e.touches && e.touches.length > 1){ drawing=false; return; } /* 두 손가락 → 핀치줌 허용 */
-    /* touchstart는 passive로 등록 → preventDefault 불필요, 브라우저 줌 허용 */
     drawing=true;
     var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
     currentStroke={pts:[pt]};
     if(!ctx) initCanvas();
-    var vp=getVP();
-    var sx=window.scrollX||window.pageXOffset||0, sy=window.scrollY||window.pageYOffset||0;
-    ctx.beginPath(); ctx.moveTo((pt.px-vp.offsetLeft-sx)*vp.scale, (pt.py-vp.offsetTop-sy)*vp.scale);
+    var sx=window.pageXOffset||0, sy=window.pageYOffset||0;
+    ctx.beginPath(); ctx.moveTo(pt.px-sx, pt.py-sy);
   }
   function onMove(e){
     if(!penOn||!drawing) return;
@@ -1054,11 +1011,9 @@ function goConsent(){
     e.preventDefault(); /* 한 손가락 드로잉 중 스크롤 방지 */
     var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
     currentStroke.pts.push(pt);
-    var vp=getVP();
-    var sx=window.scrollX||window.pageXOffset||0, sy=window.scrollY||window.pageYOffset||0;
-    var cx=(pt.px-vp.offsetLeft-sx)*vp.scale, cy=(pt.py-vp.offsetTop-sy)*vp.scale;
-    ctx.lineTo(cx, cy); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cx, cy);
+    var sx=window.pageXOffset||0, sy=window.pageYOffset||0;
+    ctx.lineTo(pt.px-sx, pt.py-sy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pt.px-sx, pt.py-sy);
   }
   function onEnd(e){
     if(!penOn||!drawing) return;
@@ -1075,16 +1030,16 @@ function goConsent(){
   canvas.addEventListener('mouseup',   onEnd);
   canvas.addEventListener('mouseleave',onEnd);
 
-  /* 스크롤/줌 변경 시 재렌더 */
-  function onVPChange(){
-    if(strokes.length>0){ if(!penOn) initCanvas(); redraw(); }
-  }
-  window.addEventListener('scroll', function(){ onVPChange(); }, {passive:true});
-  window.addEventListener('resize', function(){ onVPChange(); });
-  if(window.visualViewport){
-    window.visualViewport.addEventListener('scroll', onVPChange);
-    window.visualViewport.addEventListener('resize', onVPChange);
-  }
+  /* 스크롤 시: 스트로크가 있으면 항상 캔버스 재렌더 */
+  window.addEventListener('scroll', function(){
+    if(strokes.length===0) return;
+    redraw();
+  }, {passive:true});
+
+  /* 리사이즈 */
+  window.addEventListener('resize', function(){
+    if(strokes.length>0){ initCanvas(); redraw(); }
+  });
 
   /* ── 버튼 ── */
   fab.onclick = function(){
