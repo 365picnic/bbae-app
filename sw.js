@@ -1,5 +1,5 @@
 /* 빼빼한의원 상담앱 서비스워커 — 캐시 우선, 서버 없이도 작동 */
-var CACHE_NAME = 'bbaebbae-v14';
+var CACHE_NAME = 'bbaebbae-v15';
 var FILES = [
   './index.html',
   './treatment.html',

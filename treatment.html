@@ -982,15 +982,17 @@ function goConsent(){
   function redraw(){
     if(!ctx) return;
     var vp = getVP();
+    var sx = window.scrollX||window.pageXOffset||0;
+    var sy = window.scrollY||window.pageYOffset||0;
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.strokeStyle='#e00'; ctx.lineWidth=3; ctx.lineCap='round'; ctx.lineJoin='round';
     for(var i=0;i<strokes.length;i++){
       var pts=strokes[i].pts;
       if(pts.length<2) continue;
       ctx.beginPath();
-      ctx.moveTo((pts[0].px-vp.offsetLeft)*vp.scale, (pts[0].py-vp.offsetTop)*vp.scale);
+      ctx.moveTo((pts[0].px-vp.offsetLeft-sx)*vp.scale, (pts[0].py-vp.offsetTop-sy)*vp.scale);
       for(var j=1;j<pts.length;j++)
-        ctx.lineTo((pts[j].px-vp.offsetLeft)*vp.scale, (pts[j].py-vp.offsetTop)*vp.scale);
+        ctx.lineTo((pts[j].px-vp.offsetLeft-sx)*vp.scale, (pts[j].py-vp.offsetTop-sy)*vp.scale);
       ctx.stroke();
     }
   }
@@ -1021,13 +1023,15 @@ function goConsent(){
     snapImg.style.display = 'block';
   }
 
-  /* ── 좌표: clientX/Y → 문서 절대 좌표 (줌 보정) ── */
+  /* ── 좌표: clientX/Y → 문서 절대 좌표 (줌 보정 + 스크롤 포함) ── */
   function getPageXY(e, touch){
     var src = touch||e;
     var vp = getVP();
+    var sx = window.scrollX||window.pageXOffset||0;
+    var sy = window.scrollY||window.pageYOffset||0;
     return {
-      px: src.clientX / vp.scale + vp.offsetLeft,
-      py: src.clientY / vp.scale + vp.offsetTop
+      px: src.clientX / vp.scale + vp.offsetLeft + sx,
+      py: src.clientY / vp.scale + vp.offsetTop  + sy
     };
   }
 
@@ -1041,7 +1045,8 @@ function goConsent(){
     currentStroke={pts:[pt]};
     if(!ctx) initCanvas();
     var vp=getVP();
-    ctx.beginPath(); ctx.moveTo((pt.px-vp.offsetLeft)*vp.scale, (pt.py-vp.offsetTop)*vp.scale);
+    var sx=window.scrollX||window.pageXOffset||0, sy=window.scrollY||window.pageYOffset||0;
+    ctx.beginPath(); ctx.moveTo((pt.px-vp.offsetLeft-sx)*vp.scale, (pt.py-vp.offsetTop-sy)*vp.scale);
   }
   function onMove(e){
     if(!penOn||!drawing) return;
@@ -1050,7 +1055,8 @@ function goConsent(){
     var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
     currentStroke.pts.push(pt);
     var vp=getVP();
-    var cx=(pt.px-vp.offsetLeft)*vp.scale, cy=(pt.py-vp.offsetTop)*vp.scale;
+    var sx=window.scrollX||window.pageXOffset||0, sy=window.scrollY||window.pageYOffset||0;
+    var cx=(pt.px-vp.offsetLeft-sx)*vp.scale, cy=(pt.py-vp.offsetTop-sy)*vp.scale;
     ctx.lineTo(cx, cy); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(cx, cy);
   }

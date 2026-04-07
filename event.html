@@ -1811,6 +1811,7 @@ function goConsent(){
   canvas.addEventListener('touchstart',onStart,{passive:true});  /* passive:true → 브라우저 핀치줌 허용 */
   canvas.addEventListener('touchmove', onMove, {passive:false}); /* passive:false → 드로잉 중 스크롤 차단 */
   canvas.addEventListener('touchend',  onEnd,  {passive:true});
+  canvas.addEventListener('touchcancel',function(){ drawing=false; currentStroke=null; },{passive:true});
   canvas.addEventListener('mousedown', onStart);
   canvas.addEventListener('mousemove', onMove);
   canvas.addEventListener('mouseup',   onEnd);
@@ -1834,7 +1835,7 @@ function goConsent(){
   };
 
   document.getElementById('pen-toggle').onclick = function(){
-    penOn=!penOn;
+    penOn=!penOn; window.penOn=penOn;
     var btn=document.getElementById('pen-toggle');
     if(penOn){
       /* 펜 켬: 스냅샷 숨기고 캔버스 표시 */
@@ -1856,7 +1857,7 @@ function goConsent(){
     canvas.style.display='none';
     canvas.style.pointerEvents='none';
     snapImg.style.display='none';
-    penOn=false;
+    penOn=false; window.penOn=false;
     var btn=document.getElementById('pen-toggle');
     btn.style.background='#e00'; btn.style.transform='scale(1)';
   };
@@ -1869,7 +1870,7 @@ function goConsent(){
         canvas.style.display='none';
         canvas.style.pointerEvents='none';
         snapImg.style.display='none';
-        penOn=false;
+        penOn=false; window.penOn=false;
         var btn=document.getElementById('pen-toggle');
         btn.style.background='#e00'; btn.style.transform='scale(1)';
       } else {
