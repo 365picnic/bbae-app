@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <link rel="manifest" href="manifest.json">
 <script>
 /* 기존 서비스워커 캐시 강제 삭제 */
@@ -960,28 +960,37 @@ function goConsent(){
   var drawing = false;
   var strokes = [];
   var currentStroke = null;
-  var snapScrollX = 0, snapScrollY = 0;  /* 스냅샷 촬영 시점의 스크롤 위치 */
+
+  /* ── 비주얼뷰포트 헬퍼 ── */
+  function getVP(){
+    if(window.visualViewport) return window.visualViewport;
+    return {scale:1, offsetLeft:window.scrollX||window.pageXOffset||0, offsetTop:window.scrollY||window.pageYOffset||0, width:window.innerWidth, height:window.innerHeight};
+  }
 
   /* ── 캔버스 초기화 ── */
   function initCanvas(){
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
+    var vp = getVP();
+    canvas.width  = Math.round(vp.width);
+    canvas.height = Math.round(vp.height);
+    canvas.style.width  = vp.width  + 'px';
+    canvas.style.height = vp.height + 'px';
     ctx = canvas.getContext('2d');
     ctx.strokeStyle='#e00'; ctx.lineWidth=3; ctx.lineCap='round'; ctx.lineJoin='round';
   }
 
-  /* ── 현재 스크롤 기준으로 캔버스에 다시 그리기 ── */
+  /* ── 현재 뷰포트 기준으로 캔버스에 다시 그리기 ── */
   function redraw(){
     if(!ctx) return;
-    var sx = window.pageXOffset||window.scrollX||0;
-    var sy = window.pageYOffset||window.scrollY||0;
+    var vp = getVP();
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.strokeStyle='#e00'; ctx.lineWidth=3; ctx.lineCap='round'; ctx.lineJoin='round';
     for(var i=0;i<strokes.length;i++){
       var pts=strokes[i].pts;
       if(pts.length<2) continue;
-      ctx.beginPath(); ctx.moveTo(pts[0].px-sx, pts[0].py-sy);
-      for(var j=1;j<pts.length;j++) ctx.lineTo(pts[j].px-sx, pts[j].py-sy);
+      ctx.beginPath();
+      ctx.moveTo((pts[0].px-vp.offsetLeft)*vp.scale, (pts[0].py-vp.offsetTop)*vp.scale);
+      for(var j=1;j<pts.length;j++)
+        ctx.lineTo((pts[j].px-vp.offsetLeft)*vp.scale, (pts[j].py-vp.offsetTop)*vp.scale);
       ctx.stroke();
     }
   }
@@ -989,57 +998,61 @@ function goConsent(){
   /* ── 스냅샷: 현재 뷰포트를 img에 저장 ── */
   function takeSnapshot(){
     if(strokes.length===0){ snapImg.style.display='none'; return; }
-    snapScrollX = window.pageXOffset||window.scrollX||0;
-    snapScrollY = window.pageYOffset||window.scrollY||0;
-    /* 임시 캔버스에 현재 뷰포트 기준으로 렌더 */
+    var vp = getVP();
     var tmp = document.createElement('canvas');
-    tmp.width  = window.innerWidth;
-    tmp.height = window.innerHeight;
+    tmp.width  = Math.round(vp.width);
+    tmp.height = Math.round(vp.height);
     var tc = tmp.getContext('2d');
     tc.strokeStyle='#e00'; tc.lineWidth=3; tc.lineCap='round'; tc.lineJoin='round';
-    var sx = window.pageXOffset||window.scrollX||0;
-    var sy = window.pageYOffset||window.scrollY||0;
     for(var i=0;i<strokes.length;i++){
       var pts=strokes[i].pts;
       if(pts.length<2) continue;
-      tc.beginPath(); tc.moveTo(pts[0].px-sx, pts[0].py-sy);
-      for(var j=1;j<pts.length;j++) tc.lineTo(pts[j].px-sx, pts[j].py-sy);
+      tc.beginPath();
+      tc.moveTo((pts[0].px-vp.offsetLeft)*vp.scale, (pts[0].py-vp.offsetTop)*vp.scale);
+      for(var j=1;j<pts.length;j++)
+        tc.lineTo((pts[j].px-vp.offsetLeft)*vp.scale, (pts[j].py-vp.offsetTop)*vp.scale);
       tc.stroke();
     }
     snapImg.src = tmp.toDataURL('image/png');
+    snapImg.style.width  = vp.width  + 'px';
+    snapImg.style.height = vp.height + 'px';
     snapImg.style.willChange = 'transform';
-    snapImg.style.transform = 'translate(0,0)';
+    snapImg.style.transform = '';
     snapImg.style.display = 'block';
   }
 
-  /* ── 좌표: clientX/Y → 페이지 절대 좌표 ── */
+  /* ── 좌표: clientX/Y → 문서 절대 좌표 (줌 보정) ── */
   function getPageXY(e, touch){
     var src = touch||e;
+    var vp = getVP();
     return {
-      px: src.clientX + (window.pageXOffset||window.scrollX||0),
-      py: src.clientY + (window.pageYOffset||window.scrollY||0)
+      px: src.clientX / vp.scale + vp.offsetLeft,
+      py: src.clientY / vp.scale + vp.offsetTop
     };
   }
 
   /* ── 터치/마우스 ── */
   function onStart(e){
     if(!penOn) return;
+    if(e.touches && e.touches.length > 1) return; /* 두 손가락 핀치줌 허용 */
     e.preventDefault(); e.stopPropagation();
     drawing=true;
     var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
     currentStroke={pts:[pt]};
     if(!ctx) initCanvas();
-    var sx=window.pageXOffset||0, sy=window.pageYOffset||0;
-    ctx.beginPath(); ctx.moveTo(pt.px-sx, pt.py-sy);
+    var vp=getVP();
+    ctx.beginPath(); ctx.moveTo((pt.px-vp.offsetLeft)*vp.scale, (pt.py-vp.offsetTop)*vp.scale);
   }
   function onMove(e){
     if(!penOn||!drawing) return;
+    if(e.touches && e.touches.length > 1){ drawing=false; return; } /* 핀치줌으로 전환 시 드로잉 중단 */
     e.preventDefault(); e.stopPropagation();
     var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
     currentStroke.pts.push(pt);
-    var sx=window.pageXOffset||0, sy=window.pageYOffset||0;
-    ctx.lineTo(pt.px-sx, pt.py-sy); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(pt.px-sx, pt.py-sy);
+    var vp=getVP();
+    var cx=(pt.px-vp.offsetLeft)*vp.scale, cy=(pt.py-vp.offsetTop)*vp.scale;
+    ctx.lineTo(cx, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, cy);
   }
   function onEnd(e){
     if(!penOn||!drawing) return;
@@ -1056,20 +1069,18 @@ function goConsent(){
   canvas.addEventListener('mouseup',   onEnd);
   canvas.addEventListener('mouseleave',onEnd);
 
-  /* 스크롤 시: 펜 ON → 캔버스 재렌더 / 펜 OFF → transform만 업데이트 (GPU, 부드러움) */
-  window.addEventListener('scroll', function(){
-    if(penOn){ redraw(); return; }
-    if(strokes.length===0) return;
-    var sx = window.pageXOffset||window.scrollX||0;
-    var sy = window.pageYOffset||window.scrollY||0;
-    snapImg.style.transform = 'translate('+(snapScrollX-sx)+'px,'+(snapScrollY-sy)+'px)';
-  }, {passive:true});
-
-  /* 리사이즈 */
-  window.addEventListener('resize', function(){
+  /* 스크롤/줌 변경 시 재렌더 */
+  function onVPChange(){
     if(penOn){ initCanvas(); redraw(); }
     else if(strokes.length>0) takeSnapshot();
-  });
+  }
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('scroll', onVPChange);
+    window.visualViewport.addEventListener('resize', onVPChange);
+  } else {
+    window.addEventListener('scroll', function(){ onVPChange(); }, {passive:true});
+    window.addEventListener('resize', function(){ onVPChange(); });
+  }
 
   /* ── 버튼 ── */
   fab.onclick = function(){

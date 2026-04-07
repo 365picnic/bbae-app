@@ -84,6 +84,14 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
 .teal-sec .sec-title{background:#0d6b60;}
 .lift-sec .sec-title{background:#1e3a5f;}
 .spec-sec .sec-title{background:#7c2d12;}
+.diet-sec .sec-title{background:#92400e;}
+.diet-sec .pkg-item{background:#fffbeb;border-color:#fde68a;}
+.diet-sec .pkg-item.checked{background:#fef3c7;}
+.diet-sec .cb{border-color:#f59e0b;}
+.diet-sec .pkg-item.checked .cb{background:#b45309;border-color:#b45309;}
+.diet-sec .pkg-name{color:#451a03;}
+.diet-sec .pkg-final{color:#b45309;}
+.diet-sec .pkg-discount-badge{background:#fef3c7;color:#92400e;}
 
 /* 패키지 아이템 */
 .pkg-item{
@@ -391,6 +399,80 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
     <div class="pkg-price-col">
       <div class="pkg-final">740,000원</div>
     <div class="pkg-discount-amt">-100,000원 할인</div></div>
+  </div>
+</div>
+
+<!-- ═══ 다이어트 ═══ -->
+<div class="sec-wrap diet-sec">
+  <div class="sec-title"><span class="sec-title-text">다 이 어 트</span><span class="sec-title-en">DIET CLINIC</span></div>
+
+  <div class="pkg-item" data-price="125000" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="pkg-body">
+      <div class="pkg-name">빼빼환</div>
+      <div class="pkg-items-list">1개월</div>
+    </div>
+    <div class="pkg-price-col">
+      <div class="pkg-final">125,000원</div>
+    </div>
+  </div>
+
+  <div class="pkg-item" data-price="237500" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="pkg-body">
+      <div class="pkg-name">빼빼환 (125,000+112,500)</div>
+      <div class="pkg-items-list">2개월</div>
+    </div>
+    <div class="pkg-price-col">
+      <div class="pkg-final">237,500원</div>
+    </div>
+  </div>
+
+  <div class="pkg-item" data-price="350000" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="pkg-body">
+      <div class="pkg-name">빼빼환 (125,000+112,500+112,500)</div>
+      <div class="pkg-items-list">3개월</div>
+    </div>
+    <div class="pkg-price-col">
+      <div class="pkg-final">350,000원</div>
+    </div>
+  </div>
+
+  <div class="pkg-item" data-price="350000" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="pkg-body">
+      <div class="pkg-name">이중턱약침 <span class="pkg-discount-badge">30%</span></div>
+      <div class="pkg-items-list">이중턱 교정 · 5회</div>
+    </div>
+    <div class="pkg-price-col">
+      <div class="pkg-final">350,000원</div>
+      <div class="pkg-discount-amt">정가 500,000원</div>
+    </div>
+  </div>
+
+  <div class="pkg-item" data-price="350000" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="pkg-body">
+      <div class="pkg-name">다이어트약침 <span class="pkg-discount-badge">30%</span></div>
+      <div class="pkg-items-list">부분비만 집중해소 · 10회</div>
+    </div>
+    <div class="pkg-price-col">
+      <div class="pkg-final">350,000원</div>
+      <div class="pkg-discount-amt">정가 500,000원</div>
+    </div>
+  </div>
+
+  <div class="pkg-item" data-price="350000" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="pkg-body">
+      <div class="pkg-name">얼굴다이어트약침 <span class="pkg-discount-badge">30%</span></div>
+      <div class="pkg-items-list">얼굴 축소·슬리밍 · 5회</div>
+    </div>
+    <div class="pkg-price-col">
+      <div class="pkg-final">350,000원</div>
+      <div class="pkg-discount-amt">정가 500,000원</div>
+    </div>
   </div>
 </div>
 
