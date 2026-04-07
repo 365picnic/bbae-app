@@ -1783,7 +1783,7 @@ function goConsent(){
   /* ── 터치/마우스 ── */
   function onStart(e){
     if(!penOn) return;
-    e.preventDefault(); e.stopPropagation();
+    if(e.touches && e.touches.length > 1){ drawing=false; return; } /* 두 손가락 → 핀치줌 허용 */
     drawing=true;
     var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
     currentStroke={pts:[pt]};
@@ -1793,7 +1793,8 @@ function goConsent(){
   }
   function onMove(e){
     if(!penOn||!drawing) return;
-    e.preventDefault(); e.stopPropagation();
+    if(e.touches && e.touches.length > 1){ drawing=false; return; } /* 핀치줌 전환 시 드로잉 중단 */
+    e.preventDefault(); /* 한 손가락 드로잉 중 스크롤 방지 */
     var pt=e.touches?getPageXY(e,e.touches[0]):getPageXY(e);
     currentStroke.pts.push(pt);
     var sx=window.pageXOffset||0, sy=window.pageYOffset||0;
@@ -1807,27 +1808,23 @@ function goConsent(){
     currentStroke=null;
   }
 
-  canvas.addEventListener('touchstart',onStart,{passive:false});
-  canvas.addEventListener('touchmove', onMove, {passive:false});
-  canvas.addEventListener('touchend',  onEnd,  {passive:false});
+  canvas.addEventListener('touchstart',onStart,{passive:true});  /* passive:true → 브라우저 핀치줌 허용 */
+  canvas.addEventListener('touchmove', onMove, {passive:false}); /* passive:false → 드로잉 중 스크롤 차단 */
+  canvas.addEventListener('touchend',  onEnd,  {passive:true});
   canvas.addEventListener('mousedown', onStart);
   canvas.addEventListener('mousemove', onMove);
   canvas.addEventListener('mouseup',   onEnd);
   canvas.addEventListener('mouseleave',onEnd);
 
-  /* 스크롤 시: 펜 ON → 캔버스 재렌더 / 펜 OFF → transform만 업데이트 (GPU, 부드러움) */
+  /* 스크롤 시: 스트로크가 있으면 항상 캔버스 재렌더 */
   window.addEventListener('scroll', function(){
-    if(penOn){ redraw(); return; }
     if(strokes.length===0) return;
-    var sx = window.pageXOffset||window.scrollX||0;
-    var sy = window.pageYOffset||window.scrollY||0;
-    snapImg.style.transform = 'translate('+(snapScrollX-sx)+'px,'+(snapScrollY-sy)+'px)';
+    redraw();
   }, {passive:true});
 
   /* 리사이즈 */
   window.addEventListener('resize', function(){
-    if(penOn){ initCanvas(); redraw(); }
-    else if(strokes.length>0) takeSnapshot();
+    if(strokes.length>0){ initCanvas(); redraw(); }
   });
 
   /* ── 버튼 ── */
@@ -1847,10 +1844,8 @@ function goConsent(){
       canvas.style.pointerEvents='auto';
       btn.style.background='#b00'; btn.style.transform='scale(1.15)';
     } else {
-      /* 펜 끔: 캔버스 숨기고 스냅샷 표시 */
+      /* 펜 끔: 포인터이벤트만 끄고 캔버스는 유지 */
       canvas.style.pointerEvents='none';
-      canvas.style.display='none';
-      takeSnapshot();
       btn.style.background='#e00'; btn.style.transform='scale(1)';
     }
   };
@@ -1859,14 +1854,28 @@ function goConsent(){
     strokes=[];
     if(ctx) ctx.clearRect(0,0,canvas.width,canvas.height);
     canvas.style.display='none';
+    canvas.style.pointerEvents='none';
     snapImg.style.display='none';
+    penOn=false;
+    var btn=document.getElementById('pen-toggle');
+    btn.style.background='#e00'; btn.style.transform='scale(1)';
   };
 
   document.getElementById('pen-undo').onclick = function(){
     if(strokes.length>0){
       strokes.pop();
-      if(penOn) redraw();
-      else takeSnapshot();
+      if(strokes.length===0){
+        if(ctx) ctx.clearRect(0,0,canvas.width,canvas.height);
+        canvas.style.display='none';
+        canvas.style.pointerEvents='none';
+        snapImg.style.display='none';
+        penOn=false;
+        var btn=document.getElementById('pen-toggle');
+        btn.style.background='#e00'; btn.style.transform='scale(1)';
+      } else {
+        if(penOn) redraw();
+        else takeSnapshot();
+      }
     }
   };
 
