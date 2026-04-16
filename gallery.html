@@ -313,8 +313,8 @@ html,body{height:100%;overflow:hidden;background:#f0f4f8;font-family:'Noto Sans 
 /* ===== MANAGE PANEL ===== */
 .manage-overlay{position:fixed;inset:0;background:rgba(10,20,35,.75);z-index:700;display:none;align-items:center;justify-content:center;padding:16px;}
 .manage-overlay.open{display:flex;}
-.manage-panel{background:#fff;border-radius:16px;width:min(640px,calc(100vw-32px));max-height:calc(100vh-32px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);}
-.manage-header{padding:14px 18px;background:var(--green);display:flex;align-items:center;flex-shrink:0;}
+.manage-panel{background:#fff;border-radius:16px;width:min(640px,calc(100vw-32px));max-height:calc(100vh-32px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);position:absolute;touch-action:none;}
+.manage-header{padding:14px 18px;background:var(--green);display:flex;align-items:center;flex-shrink:0;cursor:grab;user-select:none;}
 .manage-header h3{font-size:15px;font-weight:700;color:#fff;flex:1;}
 .manage-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;}
 .manage-tab{padding:10px 18px;font-size:13px;color:var(--sub);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;font-family:inherit;background:none;border-top:none;border-left:none;border-right:none;transition:all .15s;}
@@ -956,9 +956,65 @@ async function saveCase() {
 /* ============================================================
    MANAGE PANEL
    ============================================================ */
-function openManage() { document.getElementById('manageOverlay').classList.add('open'); switchManageTab('cat', document.querySelector('.manage-tab')); }
+function openManage() {
+  const overlay = document.getElementById('manageOverlay');
+  overlay.classList.add('open');
+  // 열릴 때 패널을 화면 중앙으로 초기화
+  const panel = overlay.querySelector('.manage-panel');
+  panel.style.left = '';
+  panel.style.top = '';
+  switchManageTab('cat', document.querySelector('.manage-tab'));
+}
 function closeManage(){ document.getElementById('manageOverlay').classList.remove('open'); }
 function closeManageIfBg(e){ if(e.target===document.getElementById('manageOverlay')) closeManage(); }
+
+// 관리 패널 드래그 이동
+(function(){
+  const header = document.querySelector('.manage-header');
+  const panel = document.querySelector('.manage-panel');
+  let dragging = false, startX, startY, origLeft, origTop;
+
+  function getPos() {
+    const r = panel.getBoundingClientRect();
+    return { left: r.left, top: r.top };
+  }
+
+  header.addEventListener('mousedown', function(e){
+    if(e.target.tagName === 'BUTTON') return;
+    dragging = true;
+    const pos = getPos();
+    panel.style.left = pos.left + 'px';
+    panel.style.top = pos.top + 'px';
+    startX = e.clientX; startY = e.clientY;
+    origLeft = pos.left; origTop = pos.top;
+    header.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+  header.addEventListener('touchstart', function(e){
+    if(e.target.tagName === 'BUTTON') return;
+    dragging = true;
+    const pos = getPos();
+    panel.style.left = pos.left + 'px';
+    panel.style.top = pos.top + 'px';
+    startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+    origLeft = pos.left; origTop = pos.top;
+    e.preventDefault();
+  }, {passive:false});
+
+  document.addEventListener('mousemove', function(e){
+    if(!dragging) return;
+    panel.style.left = (origLeft + e.clientX - startX) + 'px';
+    panel.style.top  = (origTop  + e.clientY - startY) + 'px';
+  });
+  document.addEventListener('touchmove', function(e){
+    if(!dragging) return;
+    panel.style.left = (origLeft + e.touches[0].clientX - startX) + 'px';
+    panel.style.top  = (origTop  + e.touches[0].clientY - startY) + 'px';
+  }, {passive:false});
+
+  document.addEventListener('mouseup', function(){ dragging=false; header.style.cursor='grab'; });
+  document.addEventListener('touchend', function(){ dragging=false; });
+})();
 
 function switchManageTab(tab, btn) {
   document.querySelectorAll('.manage-tab').forEach(b=>b.classList.remove('active'));
