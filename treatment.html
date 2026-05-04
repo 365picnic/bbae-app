@@ -224,6 +224,26 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
 .print-opt-sub{font-size:10px;font-weight:400;opacity:.8;margin-top:1px;}
 .print-cancel{width:100%;height:40px;border-radius:10px;border:1.5px solid #c0d0e8;background:#fff;color:#4a6080;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
 
+.rose-sec .sec-title{background:#be123c;}
+.rose-sec .col-head{background:rgba(190,18,60,.6);}
+.rose-sec .item{background:#fff1f5;border-color:#fecdd3;}
+.rose-sec .item.checked{background:#ffe4e6;}
+.rose-sec .cb{border-color:#fb7185;}
+.rose-sec .item.checked .cb{background:#be123c;border-color:#be123c;}
+.rose-sec .item-name{color:#500724;}
+.rose-sec .item-price{color:#be123c;}
+.rose-sec .item-disc{background:#ffe4e6;color:#be123c;}
+
+.indigo-sec .sec-title{background:#4338ca;}
+.indigo-sec .col-head{background:rgba(67,56,202,.6);}
+.indigo-sec .item{background:#f0f0ff;border-color:#c7d2fe;}
+.indigo-sec .item.checked{background:#e0e7ff;}
+.indigo-sec .cb{border-color:#818cf8;}
+.indigo-sec .item.checked .cb{background:#4338ca;border-color:#4338ca;}
+.indigo-sec .item-name{color:#1e1b4b;}
+.indigo-sec .item-price{color:#4338ca;}
+.indigo-sec .item-disc{background:#e0e7ff;color:#4338ca;}
+
 @media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}}
 </style>
 </head>
@@ -255,37 +275,63 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
 
 <div class="content">
 
-<!-- ═══ 레이저 · 토닝 ═══ -->
+<!-- ═══ 레이저토닝 ═══ -->
 <div class="sec-wrap steel-sec">
-  <div class="sec-title"><span class="sec-title-text">레 이 저 · 토 닝</span><span class="sec-title-en">LASER &amp; TONING</span></div>
+  <div class="sec-title"><span class="sec-title-text">레 이 저 토 닝</span><span class="sec-title-en">LASER TONING</span></div>
   <div class="col-head"><span></span><span>시술명</span><span>회수</span><span>패키지가</span><span>정가</span></div>
   <div class="item" data-price="350000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">레이저토닝 <span class="item-disc">30%</span></div><div class="item-sub">잡티·기미 개선</div></div>
-    <div class="item-count">10회</div>
+    <div><div class="item-name">듀얼레이저토닝 <span class="item-disc">30%</span></div><div class="item-sub">잡티·기미 개선</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">5만/회</span>10회</div>
     <div class="item-price">350,000</div>
     <div class="item-orig">500,000원</div>
   </div>
   <div class="item" data-price="420000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">GD토닝 <span class="item-disc">30%</span></div><div class="item-sub">미백·탄력 강화</div></div>
-    <div class="item-count">4회</div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">15만/회</span>4회</div>
     <div class="item-price">420,000</div>
     <div class="item-orig">600,000원</div>
   </div>
+</div>
+
+<!-- ═══ 피부탄력 ═══ -->
+<div class="sec-wrap rose-sec">
+  <div class="sec-title"><span class="sec-title-text">피 부 탄 력</span><span class="sec-title-en">SKIN FIRMING</span></div>
+  <div class="col-head"><span></span><span>시술명</span><span>회수</span><span>패키지가</span><span>정가</span></div>
   <div class="item" data-price="350000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">LDM <span class="item-disc">30%</span></div><div class="item-sub">피부 탄력·재생</div></div>
-    <div class="item-count">10회</div>
+    <div><div class="item-name">RF고주파 <span class="item-disc">30%</span></div><div class="item-sub">피부 탄력·리프팅</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">5만/회</span>10회</div>
     <div class="item-price">350,000</div>
     <div class="item-orig">500,000원</div>
   </div>
-  <div class="item" data-price="420000" data-vat="true" onclick="toggle(this)">
+  <div class="item" data-price="350000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">RF고주파 <span class="item-disc">30%</span></div><div class="item-sub">피부 탄력·리프팅</div></div>
-    <div class="item-count">4회</div>
-    <div class="item-price">420,000</div>
-    <div class="item-orig">600,000원</div>
+    <div><div class="item-name">LDM(초음파) <span class="item-disc">30%</span></div><div class="item-sub">피부 탄력·재생</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">5만/회</span>10회</div>
+    <div class="item-price">350,000</div>
+    <div class="item-orig">500,000원</div>
+  </div>
+</div>
+
+<!-- ═══ 리프팅 ═══ -->
+<div class="sec-wrap indigo-sec">
+  <div class="sec-title"><span class="sec-title-text">리 프 팅</span><span class="sec-title-en">LIFTING</span></div>
+  <div class="col-head"><span></span><span>시술명</span><span>회수</span><span>패키지가</span><span>정가</span></div>
+  <div class="item" data-price="315000" data-vat="true" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div><div class="item-name">하이푸(슈링크/더블티) <span class="item-disc">30%</span></div><div class="item-sub">HIFU 리프팅</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">15만/회</span>3회</div>
+    <div class="item-price">315,000</div>
+    <div class="item-orig">450,000원</div>
+  </div>
+  <div class="item" data-price="315000" data-vat="true" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div><div class="item-name">온다 극초단파 <span class="item-disc">30%</span></div><div class="item-sub">극초단파 리프팅</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">15만/회</span>3회</div>
+    <div class="item-price">315,000</div>
+    <div class="item-orig">450,000원</div>
   </div>
 </div>
 
@@ -295,107 +341,154 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   <div class="col-head"><span></span><span>시술명</span><span>회수</span><span>패키지가</span><span>정가</span></div>
   <div class="item" data-price="840000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">어븀부스터 PLLA <span class="item-disc">30%</span></div><div class="item-sub">콜라겐 재생·탄력</div></div>
-    <div class="item-count">4회</div>
+    <div><div class="item-name">PLLA(콜라겐) <span class="item-disc">30%</span></div><div class="item-sub">콜라겐 재생·탄력</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">30만/회</span>4회</div>
     <div class="item-price">840,000</div>
     <div class="item-orig">1,200,000원</div>
   </div>
+  <div class="item" data-price="700000" data-vat="true" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div><div class="item-name">STC20(줄기세포) <span class="item-disc">30%</span></div><div class="item-sub">줄기세포 재생·탄력</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">25만/회</span>4회</div>
+    <div class="item-price">700,000</div>
+    <div class="item-orig">1,000,000원</div>
+  </div>
   <div class="item" data-price="800000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">어븀부스터 라디쥬 <span class="item-disc">20%</span></div><div class="item-sub">기미·미백 집중</div></div>
-    <div class="item-count">4회</div>
+    <div><div class="item-name">라디쥬(PDRN재생) <span class="item-disc">20%</span></div><div class="item-sub">기미·미백 집중</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">25만/회</span>4회</div>
     <div class="item-price">800,000</div>
     <div class="item-orig">1,000,000원</div>
   </div>
   <div class="item" data-price="420000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">어븀부스터 CIELO <span class="item-disc">30%</span></div><div class="item-sub">피부 보습·생기</div></div>
-    <div class="item-count">4회</div>
+    <div><div class="item-name">CIELO(주름/미백) <span class="item-disc">30%</span></div><div class="item-sub">피부 보습·생기</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">15만/회</span>4회</div>
+    <div class="item-price">420,000</div>
+    <div class="item-orig">600,000원</div>
+  </div>
+  <div class="item" data-price="420000" data-vat="true" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div><div class="item-name">G2SKIN(탄력/미백) <span class="item-disc">30%</span></div><div class="item-sub">피부 장벽·탄력</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">15만/회</span>4회</div>
+    <div class="item-price">420,000</div>
+    <div class="item-orig">600,000원</div>
+  </div>
+  <div class="item" data-price="420000" data-vat="true" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div><div class="item-name">리쥬필업(CICA/영양) <span class="item-disc">30%</span></div><div class="item-sub">진정·영양 공급</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">15만/회</span>4회</div>
     <div class="item-price">420,000</div>
     <div class="item-orig">600,000원</div>
   </div>
   <div class="item" data-price="280000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">어븀부스터 TIN <span class="item-disc">30%</span></div><div class="item-sub">여드름·피지 조절</div></div>
-    <div class="item-count">4회</div>
+    <div><div class="item-name">TIN(진정/수분) <span class="item-disc">30%</span></div><div class="item-sub">여드름·피지 조절</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">10만/회</span>4회</div>
     <div class="item-price">280,000</div>
     <div class="item-orig">400,000원</div>
   </div>
-  <div class="item" data-price="224000" data-vat="true" onclick="toggle(this)">
+  <div class="item" data-price="256000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">어븀부스터 QTCELL <span class="item-disc">30%</span></div><div class="item-sub">모공·피지 관리</div></div>
-    <div class="item-count">4회</div>
-    <div class="item-price">224,000</div>
-    <div class="item-orig">320,000원</div>
+    <div><div class="item-name">QTCELL(재생/영양) <span class="item-disc">20%</span></div><div class="item-sub">모공·자생력 강화</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">8만/회</span>4~8회</div>
+    <div class="item-price">256,000~</div>
+    <div class="item-orig">320,000원~</div>
   </div>
 </div>
 
-<!-- ═══ 리프팅 · 약침 ═══ -->
+<!-- ═══ 약침 ═══ -->
 <div class="sec-wrap violet-sec">
-  <div class="sec-title"><span class="sec-title-text">리 프 팅 · 약 침</span><span class="sec-title-en">LIFTING &amp; HERBAL ACUPUNCTURE</span></div>
+  <div class="sec-title"><span class="sec-title-text">약 침</span><span class="sec-title-en">HERBAL ACUPUNCTURE</span></div>
   <div class="col-head"><span></span><span>시술명</span><span>회수</span><span>패키지가</span><span>정가</span></div>
-  <div class="item" data-price="315000" data-vat="true" onclick="toggle(this)">
-    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">슈링크유니버스 <span class="item-disc">30%</span></div><div class="item-sub">HIFU 리프팅</div></div>
-    <div class="item-count">3회</div>
-    <div class="item-price">315,000</div>
-    <div class="item-orig">450,000원</div>
-  </div>
-  <div class="item" data-price="315000" data-vat="true" onclick="toggle(this)">
-    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">극초단파 온다 <span class="item-disc">30%</span></div><div class="item-sub">극초단파 리프팅</div></div>
-    <div class="item-count">3회</div>
-    <div class="item-price">315,000</div>
-    <div class="item-orig">450,000원</div>
-  </div>
-  <div class="item" data-price="210000" data-vat="true" onclick="toggle(this)">
-    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">라라필 <span class="item-disc">30%</span></div><div class="item-sub">필링·재생</div></div>
-    <div class="item-count">3회</div>
-    <div class="item-price">210,000</div>
-    <div class="item-orig">300,000원</div>
-  </div>
-  <div class="item" data-price="315000" data-vat="true" onclick="toggle(this)">
-    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">동안약침 <span class="item-disc">30%</span></div><div class="item-sub">동안·탄력 개선</div></div>
-    <div class="item-count">3회</div>
-    <div class="item-price">315,000</div>
-    <div class="item-orig">450,000원</div>
-  </div>
   <div class="item" data-price="630000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">주름약침 <span class="item-disc">30%</span></div><div class="item-sub">팔자·목주름</div></div>
-    <div class="item-count">3회</div>
+    <div><div class="item-name">ANK케라틴약침 <span class="item-disc">30%</span></div><div class="item-sub">탄력·케라틴 약침</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">15만/회</span>6회</div>
     <div class="item-price">630,000</div>
     <div class="item-orig">900,000원</div>
   </div>
-  <div class="item" data-price="378000" data-vat="true" onclick="toggle(this)">
+  <div class="item" data-price="504000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">볼륨약침 <span class="item-disc">30%</span></div><div class="item-sub">볼꺼짐 개선</div></div>
-    <div class="item-count">3회</div>
-    <div class="item-price">378,000</div>
-    <div class="item-orig">540,000원</div>
+    <div><div class="item-name">동안약침 <span class="item-disc">30%</span></div><div class="item-sub">동안·탄력 개선</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">12만/회</span>6회</div>
+    <div class="item-price">504,000</div>
+    <div class="item-orig">720,000원</div>
   </div>
-  <div class="item" data-price="350000" onclick="toggle(this)">
+  <div class="item" data-price="630000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">이중턱약침 <span class="item-disc">30%</span></div><div class="item-sub">이중턱 교정</div></div>
-    <div class="item-count">5회</div>
-    <div class="item-price">350,000</div>
+    <div><div class="item-name">팔자주름약침 <span class="item-disc">30%</span></div><div class="item-sub">팔자주름 집중 개선</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">15만/회</span>6회</div>
+    <div class="item-price">630,000</div>
+    <div class="item-orig">900,000원</div>
+  </div>
+  <div class="item" data-price="420000" data-vat="true" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div><div class="item-name">주름약침(잔주름, 목주름) <span class="item-disc">30%</span></div><div class="item-sub">잔주름·목주름</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">20~35만/회</span>3회</div>
+    <div class="item-price">420,000~</div>
+    <div class="item-orig">600,000원~</div>
+  </div>
+  <div class="item" data-price="360000" data-vat="true" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div><div class="item-name">볼륨약침(볼꺼짐) <span class="item-disc">20%</span></div><div class="item-sub">볼꺼짐 개선</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">15만/회</span>3회</div>
+    <div class="item-price">360,000</div>
+    <div class="item-orig">450,000원</div>
+  </div>
+  <div class="item" data-price="400000" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div><div class="item-name">이중턱약침 <span class="item-disc">20%</span></div><div class="item-sub">이중턱 교정</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">10만/회</span>5회</div>
+    <div class="item-price">400,000</div>
+    <div class="item-orig">500,000원</div>
+  </div>
+  <div class="item" data-price="400000" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div><div class="item-name">얼굴다이어트약침 <span class="item-disc">20%</span></div><div class="item-sub">얼굴 축소·슬리밍</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">10만/회</span>5회</div>
+    <div class="item-price">400,000</div>
     <div class="item-orig">500,000원</div>
   </div>
   <div class="item" data-price="350000" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">다이어트약침 <span class="item-disc">30%</span></div><div class="item-sub">부분비만 집중해소</div></div>
-    <div class="item-count">10회</div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">5만/회</span>10회</div>
     <div class="item-price">350,000</div>
     <div class="item-orig">500,000원</div>
   </div>
-  <div class="item" data-price="350000" onclick="toggle(this)">
+</div>
+
+<!-- 소제목 없는 단독 항목 -->
+<div class="sec-wrap violet-sec">
+  <div class="col-head"><span></span><span>시술명</span><span>회수</span><span>패키지가</span><span>정가</span></div>
+  <div class="item" data-price="400000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">얼굴다이어트약침 <span class="item-disc">30%</span></div><div class="item-sub">얼굴 축소·슬리밍</div></div>
-    <div class="item-count">5회</div>
-    <div class="item-price">350,000</div>
+    <div><div class="item-name">라라필 <span class="item-disc">20%</span></div><div class="item-sub">필링·재생</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">10만/회</span>5회</div>
+    <div class="item-price">400,000</div>
     <div class="item-orig">500,000원</div>
+  </div>
+  <div class="item" data-price="1260000" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div><div class="item-name">탈모(비유전성탈모) <span class="item-disc">30%</span></div><div class="item-sub">비유전성 탈모 개선</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">15만/회</span>12회</div>
+    <div class="item-price">1,260,000</div>
+    <div class="item-orig">1,800,000원</div>
+  </div>
+  <div class="item" data-price="10000" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div><div class="item-name">점/편평사마귀</div><div class="item-sub">개당 1만 / 홀페이스 20만</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">1만/개</span>개당</div>
+    <div class="item-price">10,000~</div>
+    <div></div>
+  </div>
+  <div class="item" data-price="20000" onclick="toggle(this)">
+    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div><div class="item-name">검버섯/모반(사이즈에 따라)</div><div class="item-sub">크기에 따라 다름</div></div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">2~5만/개</span>개당</div>
+    <div class="item-price">20,000~50,000</div>
+    <div></div>
   </div>
 </div>
 

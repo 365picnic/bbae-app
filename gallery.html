@@ -1034,7 +1034,7 @@ function renderCatAdmin(body){
       <span style="font-size:13px;font-weight:700;color:var(--text);">카테고리 목록</span>
       <button class="btn-primary" style="font-size:12px;padding:6px 14px;" onclick="addCat()">+ 추가</button>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+    <div>
     ${cats.map((c,i)=>{const cnt=cases.filter(x=>x.categoryId===c.id).length; return `
       <div class="cat-item">
         <div style="display:flex;flex-direction:column;gap:2px;margin-right:2px;">
