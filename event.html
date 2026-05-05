@@ -447,19 +447,6 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
     </div>
   </div>
 
-  <!-- 요약 바 -->
-  <div class="summary-bar">
-    <div class="s-left">
-      선택된 항목 <strong id="cnt">0</strong>개 &nbsp;|&nbsp;
-      체험가 <strong id="trial-sum">0</strong>원 &nbsp;·&nbsp;
-      패키지 <strong id="pkg-sum">0</strong>원
-      &nbsp;|&nbsp; 부가세 <strong id="vat-sum" style="color:#ffd0a0;">0</strong>원 별도
-    </div>
-    <div class="s-right">
-      <div class="s-rlabel">선택 합계 (부가세 별도 포함)</div>
-      <div class="s-total" id="total">0 <span>원</span></div>
-    </div>
-  </div>
 
   <!-- 벚꽃 -->
   <svg class="blossom" width="95" height="105" viewBox="0 0 95 105">
@@ -749,8 +736,22 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
     <div class="n-row"><span class="n-dot">✦</span><span>체험 프로그램은 부가세 포함. &nbsp;패키지 프로그램은 부가세 별도 가격입니다</span></div>
     <div class="n-row"><span class="n-dot">✦</span><span>1회 체험 프로그램은 동일 시술에 한하여 1회만 적용됩니다</span></div>
     <div class="n-row"><span class="n-dot">✦</span><span>패키지 시술권은 구매일로부터 1년 이내 사용을 권장합니다</span></div>
-    <div class="n-row"><span class="n-dot">✦</span><span>일반침 치료시 본인부담금 별도 발생합니다</span></div>
+    <div class="n-row"><span class="n-dot">✦</span><span>일반침 또는 특수침 치료시 본인부담금이 별도 발생합니다</span></div>
     <div class="n-row"><span class="n-dot">✦</span><span>예약 및 문의 &nbsp;02-2038-2114</span></div>
+  </div>
+
+<!-- 최종 합계 -->
+<div class="summary-bar" style="margin:0 14px 14px;">
+    <div class="s-left">
+      선택된 항목 <strong id="cnt">0</strong>개 &nbsp;|&nbsp;
+      체험가 <strong id="trial-sum">0</strong>원 &nbsp;·&nbsp;
+      패키지 <strong id="pkg-sum">0</strong>원
+      &nbsp;|&nbsp; 부가세 <strong id="vat-sum" style="color:#ffd0a0;">0</strong>원 별도
+    </div>
+    <div class="s-right">
+      <div class="s-rlabel">선택 합계 (부가세 별도 포함)</div>
+      <div class="s-total" id="total">0 <span>원</span></div>
+    </div>
   </div>
 
   <!-- 서명 -->
@@ -1428,7 +1429,7 @@ function getPatientContent(info, items, sigData) {
     + '<div>✦ 체험 프로그램은 부가세 포함. 패키지 프로그램은 부가세 별도 가격입니다.</div>'
     + '<div>✦ 1회 체험 프로그램은 동일 시술에 한하여 1회만 적용됩니다.</div>'
     + '<div>✦ 패키지 시술권은 구매일로부터 1년 이내 사용을 권장합니다.</div>'
-    + '<div>✦ 일반침 치료시 본인부담금 별도 발생합니다.</div>'
+    + '<div>✦ 일반침 또는 특수침 치료시 본인부담금이 별도 발생합니다.</div>'
     + '<div>✦ 예약 및 문의 02-2038-2114</div>'
     + '</div>'
 
@@ -1518,7 +1519,7 @@ function getFullContent(info, allSecs, checkedItems, sigData) {
     + '<div style="background:#fff8f9;border:1px solid #f0d0d8;border-radius:8px;padding:8px 12px;font-size:9.5px;color:#9a5060;line-height:1.7;font-family:sans-serif;">'
     + '<div>✦ 체험 부가세 포함 / 패키지 부가세 별도</div>'
     + '<div>✦ 1회 체험에 한하여 적용됩니다</div>'
-    + '<div>✦ 일반침 치료시 본인부담금 별도</div>'
+    + '<div>✦ 일반침 또는 특수침 치료시 본인부담금이 별도 발생합니다</div>'
     + '</div>'
     + '<div style="border:1.5px solid #d0b0bc;border-radius:8px;padding:8px 12px;">'
     + '<div style="font-size:10px;font-weight:700;color:#5a1028;margin-bottom:6px;font-family:sans-serif;">환자 서명</div>'
