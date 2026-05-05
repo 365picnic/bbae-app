@@ -266,6 +266,9 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
 .item > div:nth-child(2) { min-width: 0; }
 .item-name { word-break: break-word; overflow-wrap: break-word; }
 
+/* 클리닉별 상품 레이아웃 */
+.clinic-wrap { display: flex; flex-direction: column; gap: 14px; }
+
 /* 클리닉별 상품: 긴 항목명 대응 */
 .clinic-wrap .item > div:nth-child(2) {
   display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; min-width: 0;
@@ -331,12 +334,12 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
 <div class="sec-wrap rose-sec">
   <div class="sec-title"><span class="sec-title-text">피 부 탄 력</span><span class="sec-title-en">SKIN FIRMING</span></div>
   <div class="col-head"><span></span><span>시술명</span><span>회수</span><span>패키지가</span><span>정가</span></div>
-  <div class="item" data-price="350000" data-vat="true" onclick="toggle(this)">
+  <div class="item" data-price="315000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">RF고주파 <span class="item-disc">30%</span></div><div class="item-sub">피부 탄력·리프팅</div></div>
-    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">5만/회</span>10회</div>
-    <div class="item-price">350,000</div>
-    <div class="item-orig">500,000원</div>
+    <div class="item-count"><span style="display:block;font-size:9px;font-weight:400;color:#9aaabb;">15만/회</span>3회</div>
+    <div class="item-price">315,000</div>
+    <div class="item-orig">450,000원</div>
   </div>
   <div class="item" data-price="350000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
@@ -569,7 +572,7 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   </div>
   <div class="item" data-price="570000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">GD토닝 4회(42만) + LDM 4회</div><div class="item-badge">결합 -5만할인</div></div>
+    <div><div class="item-name">GD토닝 4회(42만) + LDM 4회(20만)</div><div class="item-badge">결합 -5만할인</div></div>
     <div class="item-count">-5만</div>
     <div class="item-price">570,000</div>
     <div class="item-orig">620,000원</div>
@@ -587,7 +590,7 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   <div class="col-head"><span></span><span>패키지 구성</span><span>할 인</span><span>패키지가</span><span>개별합계</span></div>
   <div class="item" data-price="765000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">RF고주파 3회(35.1만) + LDM 10회(35만) + 라라필 2회(20만)</div><div class="item-badge">결합 -10만할인</div></div>
+    <div><div class="item-name">RF고주파 3회(31.5만) + LDM 10회(35만) + 라라필 2회(20만)</div><div class="item-badge">결합 -10만할인</div></div>
     <div class="item-count">-10만</div>
     <div class="item-price">765,000</div>
     <div class="item-orig">865,000원</div>
@@ -612,7 +615,7 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   </div>
   <div class="item" data-price="970000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">레이저토닝 10회(35만) + LDM 10회(35만) + 리쥬필업 4회(42만)</div><div class="item-badge">결합 -15만할인</div></div>
+    <div><div class="item-name">레이저토닝 10회(35만) + LDM 10회(35만) + 리쥬필업 또는 G2SKIN 4회(42만)</div><div class="item-badge">결합 -15만할인</div></div>
     <div class="item-count">-15만</div>
     <div class="item-price">970,000</div>
     <div class="item-orig">1,120,000원</div>
@@ -672,7 +675,7 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   </div>
   <div class="item" data-price="556000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">QTCELL 4회(25.6만)/8회(20%)(51.2만) + LDM 10회(35만)</div><div class="item-badge">결합 -5만할인</div></div>
+    <div><div class="item-name">QTCELL 4회(20%)(25.6만) + LDM 10회(35만)</div><div class="item-badge">결합 -5만할인</div></div>
     <div class="item-count">-5만</div>
     <div class="item-price">556,000</div>
     <div class="item-orig">606,000원</div>
@@ -712,14 +715,14 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   <div class="col-head"><span></span><span>패키지 구성</span><span>할 인</span><span>패키지가</span><span>개별합계</span></div>
   <div class="item" data-price="685000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">주름약침 3회(얼굴:42만, 얼굴+목:73.5만) + 하이푸 3회(31.5만)</div><div class="item-badge">결합 -5만할인</div></div>
+    <div><div class="item-name">주름약침 3회(얼굴 또는 목:42만), + 하이푸 3회(31.5만)</div><div class="item-badge">결합 -5만할인</div></div>
     <div class="item-count">-5만</div>
     <div class="item-price">685,000</div>
     <div class="item-orig">735,000원</div>
   </div>
   <div class="item" data-price="950000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">주름약침 3회(얼굴:42만, 얼굴+목:73.5만) + 하이푸 3회(31.5만)</div><div class="item-badge">결합 -10만할인</div></div>
+    <div><div class="item-name">주름약침 3회(얼굴+목:73.5만원) + 하이푸 3회(31.5만)</div><div class="item-badge">결합 -10만할인</div></div>
     <div class="item-count">-10만</div>
     <div class="item-price">950,000</div>
     <div class="item-orig">1,050,000원</div>
@@ -730,7 +733,7 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   <div class="col-head"><span></span><span>패키지 구성</span><span>할 인</span><span>패키지가</span><span>개별합계</span></div>
   <div class="item" data-price="625000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">볼륨약침 3회(36만(20%)) + RF고주파 3회(35.1만)</div><div class="item-badge">결합 -5만할인</div></div>
+    <div><div class="item-name">볼륨약침 3회(20%)(36만원) + RF고주파 3회(31.5만)</div><div class="item-badge">결합 -5만할인</div></div>
     <div class="item-count">-5만</div>
     <div class="item-price">625,000</div>
     <div class="item-orig">675,000원</div>
