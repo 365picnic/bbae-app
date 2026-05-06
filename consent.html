@@ -192,10 +192,14 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
 
 <!-- ② 시술 선택 내역 -->
 <div class="card">
-  <div class="sec-label">
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4h10M2 7h7M2 10h5" stroke="#0d1f3c" stroke-width="1.4" stroke-linecap="round"/></svg>
-    선택된 시술
-    <span class="source-badge src-treatment" id="source-badge" style="display:none;"></span>
+  <div class="sec-label" style="display:flex;align-items:center;justify-content:space-between;">
+    <span style="display:flex;align-items:center;gap:6px;">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4h10M2 7h7M2 10h5" stroke="#0d1f3c" stroke-width="1.4" stroke-linecap="round"/></svg>
+      선택된 시술
+    </span>
+    <span id="total-price-display" style="font-size:13px;font-weight:700;color:#0d1f3c;letter-spacing:0;display:none;">
+      총 합계 : <span id="total-price-value" style="color:#0369a1;">0</span>원<span style="font-size:10px;font-weight:500;color:#888;margin-left:3px;">(부가세 포함)</span>
+    </span>
   </div>
   <div class="treatment-tags" id="treatment-tags">
     <span class="no-tag">연결된 시술 정보가 없습니다</span>
@@ -427,23 +431,25 @@ function itemBadgeHtml(it){
 
 function renderTreatmentTags(){
   var container = document.getElementById('treatment-tags');
-  var badge = document.getElementById('source-badge');
   if(!consentData || !consentData.items || !consentData.items.length){
     container.innerHTML = '<span class="no-tag">연결된 시술 정보가 없습니다</span>';
     return;
   }
-  var src = consentData.source || 'treatment';
-  var srcMap = {treatment:{label:'시술내역표',cls:'src-treatment'}, clinic:{label:'클리닉별상품',cls:'src-clinic'}, event:{label:'1회체험이벤트',cls:'src-event'}};
-  var s = srcMap[src] || srcMap.treatment;
-  badge.style.display = 'inline-flex';
-  badge.className = 'source-badge ' + s.cls;
-  badge.textContent = '▶ ' + s.label;
 
   var html = '';
   for(var i=0; i<consentData.items.length; i++){
     html += '<span class="treatment-tag"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0d1f3c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'+itemLabel(consentData.items[i])+itemBadgeHtml(consentData.items[i])+'</span>';
   }
   container.innerHTML = html;
+
+  var totalEl = document.getElementById('total-price-display');
+  var totalVal = document.getElementById('total-price-value');
+  if(totalEl && totalVal && consentData.totalPrice > 0){
+    totalVal.textContent = consentData.totalPrice.toLocaleString();
+    totalEl.style.display = 'inline-flex';
+    totalEl.style.alignItems = 'center';
+    totalEl.style.gap = '2px';
+  }
 }
 
 // ── 동의 체크 ──────────────────────────────

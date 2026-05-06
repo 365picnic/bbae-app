@@ -70,7 +70,7 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   margin-top:12px;background:rgba(13,31,60,.05);border-radius:10px;border:1px solid #c0d0e8;
   padding:9px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative;z-index:1;
 }
-.s-left{font-size:11px;color:#4a6080;font-weight:300;line-height:1.7;}
+.s-left{font-size:16.5px;color:#4a6080;font-weight:300;line-height:1.7;}
 .s-left strong{color:#0d1f3c;}
 .s-right{text-align:right;}
 .s-rlabel{font-size:9px;color:#6a80a0;letter-spacing:.08em;}
@@ -827,7 +827,7 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
 <div class="summary-bar" style="margin:0 14px 14px;">
   <div class="s-left">선택 <strong id="cnt">0</strong>개 &nbsp;|&nbsp; 합계 <strong id="trial-sum">0</strong>원 &nbsp;|&nbsp; 부가세 <strong id="vat-sum">0</strong>원 별도</div>
   <div class="s-right">
-    <div class="s-rlabel">총 합계 (부가세 별도 포함)</div>
+    <div class="s-rlabel">총 합계 (부가세 포함)</div>
     <div class="s-total" id="total">0 <span>원</span></div>
   </div>
 </div>
@@ -1167,7 +1167,8 @@ function doPrint(type){
     for(var i=0;i<allEls.length;i++){
       var el=allEls[i];
       var secEl=el.closest('.sec-wrap');
-      var secTitle=secEl?secEl.querySelector('.sec-title-text').textContent:'';
+      var secTitleEl=secEl?secEl.querySelector('.sec-title-text'):null;
+      var secTitle=secTitleEl?secTitleEl.textContent:'';
       if(!secData[secTitle])secData[secTitle]=[];
       var cnt2el=el.querySelector('.item-count');var pr=el.querySelector('.item-price');
       var p2=parseInt(el.getAttribute('data-price'));
@@ -1287,9 +1288,12 @@ function goConsent(){
     if(els[i].closest('.teal-sec')){defBg='#ccfbf1';defCol='#0d9488';}
     else if(els[i].closest('.violet-sec')){defBg='#ede9fe';defCol='#6d28d9';}
     else if(els[i].closest('.amber-sec')){defBg='#fef3c7';defCol='#d97706';}
-    items.push({label:baseName, badge:discEl?discEl.textContent:'', badgeBg:defBg, badgeCol:defCol});
+    var itemPrice = parseInt(els[i].getAttribute('data-price'))||0;
+    var itemVat = els[i].getAttribute('data-vat')==='true' ? Math.round(itemPrice*0.1) : 0;
+    items.push({label:baseName, badge:discEl?discEl.textContent:'', badgeBg:defBg, badgeCol:defCol, price:itemPrice, vatAmt:itemVat});
   }
-  var data = { chart:info.chart, name:info.name, date:info.date.replace(/\./g,'-'), items:items, source:'treatment' };
+  var totalPrice = items.reduce(function(s,it){return s+(it.price||0)+(it.vatAmt||0);},0);
+  var data = { chart:info.chart, name:info.name, date:info.date.replace(/\./g,'-'), items:items, totalPrice:totalPrice, source:'treatment' };
   try{ localStorage.setItem('bbaebbae_consent_temp', JSON.stringify(data)); }catch(e){}
   location.href = 'consent.html';
 }
