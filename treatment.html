@@ -316,7 +316,7 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
 <div class="sec-wrap steel-sec">
   <div class="sec-title"><span class="sec-title-text">잡티제거</span><span class="sec-title-en">SPOT REMOVAL</span></div>
   <div class="col-head"><span></span><span>시술명</span><span>회수</span><span>가격</span><span>비고</span></div>
-  <div class="item" data-price="350000" data-vat="true" onclick="toggle(this)">
+  <div class="item" data-combo="spot" data-price="350000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">듀얼레이저토닝</div></div>
     <div class="item-count">10회</div>
@@ -330,7 +330,7 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
     <div class="item-price">420,000</div>
     <div class="item-note"></div>
   </div>
-  <div class="item" data-price="350000" data-vat="true" onclick="toggle(this)">
+  <div class="item" data-combo="spot" data-price="350000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">LDM</div></div>
     <div class="item-count">10회</div>
@@ -1157,10 +1157,11 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
 
 <!-- 최종 합계 -->
 <div class="summary-bar" style="margin:0 14px 14px;">
-  <div class="s-left">선택 <strong id="cnt">0</strong>개 &nbsp;|&nbsp; 합계 <strong id="trial-sum">0</strong>원 &nbsp;|&nbsp; 부가세 <strong id="vat-sum">0</strong>원 별도</div>
+  <div class="s-left">선택 <strong id="cnt">0</strong>개 &nbsp;|&nbsp; 합계 <strong id="trial-sum">0</strong>원 &nbsp;|&nbsp; <span id="disc-wrap" style="display:none;">결합할인 <strong id="disc-sum" style="color:#dc2626;">0</strong>원 &nbsp;|&nbsp; </span>부가세 <strong id="vat-sum">0</strong>원 별도</div>
   <div class="s-right">
     <div class="s-rlabel">총 합계 (부가세 포함)</div>
     <div class="s-total" id="total">0 <span>원</span></div>
+    <div id="disc-badge" style="display:none;margin-top:3px;font-size:11px;font-weight:700;color:#dc2626;">결합 할인 -100,000원 적용</div>
   </div>
 </div>
 
@@ -1271,6 +1272,11 @@ function cntText(el){
   return sl?sl.options[sl.selectedIndex].text:c.textContent;
 }
 
+function getDiscount(){
+  /* 잡티제거: 듀얼레이저토닝 + LDM 동시 선택 시 10만원 할인 */
+  return document.querySelectorAll('.item.checked[data-combo="spot"]').length>=2?100000:0;
+}
+
 function updateSummary(){
   var all=document.querySelectorAll('.item.checked');
   var total=0; var vat=0;
@@ -1278,10 +1284,15 @@ function updateSummary(){
     var el=all[i]; var p=parseInt(el.getAttribute('data-price')); total+=p;
     if(el.getAttribute('data-vat')==='true') vat+=Math.round(p*0.1);
   }
+  var dsc=getDiscount();
+  vat-=Math.round(dsc*0.1);
   document.getElementById('cnt').textContent=all.length;
   document.getElementById('trial-sum').textContent=total.toLocaleString();
+  document.getElementById('disc-sum').textContent=dsc?'-'+dsc.toLocaleString():'0';
+  document.getElementById('disc-wrap').style.display=dsc?'inline':'none';
+  document.getElementById('disc-badge').style.display=dsc?'block':'none';
   document.getElementById('vat-sum').textContent=vat.toLocaleString();
-  document.getElementById('total').innerHTML=(total+vat).toLocaleString()+' <span>원</span>';
+  document.getElementById('total').innerHTML=(total-dsc+vat).toLocaleString()+' <span>원</span>';
 }
 
 function resetAll(){
@@ -1324,6 +1335,8 @@ function saveRecord(){
     total+=p;
     items.push({label:getItemLabel(el),count:getItemCount(el),price:p});
   }
+  var dscS=getDiscount();
+  if(dscS){total-=dscS;items.push({label:'결합 할인',count:'',price:-dscS});}
   if(!sigSavedData&&sigHasMark&&sigCanvas){sigSavedData=sigCanvas.toDataURL('image/png');}
   var rec={id:Date.now(),chart:chart,name:name,date:date,items:items,total:total,sig:sigSavedData||null};
   var all=getAll();
@@ -1510,6 +1523,12 @@ function doPrint(type){
       +'</td>'
       +'</tr>';
   }
+  var dscP=getDiscount();var discFull='';
+  if(dscP){
+    total-=dscP;vatTotal-=Math.round(dscP*0.1);
+    rows+='<tr><td style="padding:6px 10px;border-bottom:1px solid #e0eaf4;font-size:13px;font-weight:600;color:#dc2626;font-family:sans-serif;">결합 할인 (듀얼레이저토닝 + LDM)</td><td style="padding:6px 10px;border-bottom:1px solid #e0eaf4;"></td><td style="padding:6px 10px;border-bottom:1px solid #e0eaf4;text-align:right;"><div style="font-size:13px;font-weight:700;color:#dc2626;font-family:serif;">-'+dscP.toLocaleString()+'원</div></td></tr>';
+    discFull='<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 14px;background:#fff1f1;border:1px solid #f3c9c9;border-radius:8px;margin-bottom:8px;"><span style="font-size:11px;color:#dc2626;font-family:sans-serif;">결합 할인 (듀얼레이저토닝 + LDM)</span><span style="font-size:13px;font-weight:700;color:#dc2626;font-family:sans-serif;">-'+dscP.toLocaleString()+'원</span></div>';
+  }
   var sig=sigSavedData||null;
   var fn='(시)'+info.name+'_'+info.date.replace(/\./g,'')+'_'+(type==='patient'?'환자용':'원내용');
   var allSec='';
@@ -1589,7 +1608,7 @@ function doPrint(type){
         +'<span style="font-size:13px;font-weight:700;color:#0d1f3c;font-family:sans-serif;">총 합계</span>'
         +'<span style="font-family:serif;font-size:20px;font-weight:900;color:#0369a1;">'+grandTotal.toLocaleString()+' <span style="font-size:13px;">원</span></span></div>'
         +'</div>'
-      :allSec
+      :allSec+discFull
         +(vatTotal>0?'<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 14px;background:#fffbea;border:1px solid #e8e0b0;border-radius:8px 8px 0 0;margin-bottom:0;">'
           +'<span style="font-size:11px;color:#9a8040;font-family:sans-serif;">부가세 총액</span>'
           +'<span style="font-size:13px;font-weight:600;color:#9a7000;font-family:sans-serif;">'+vatTotal.toLocaleString()+'원</span></div>':'')
@@ -1645,6 +1664,7 @@ function goConsent(){
     items.push({label:baseName, badge:discEl?discEl.textContent:'', badgeBg:defBg, badgeCol:defCol, price:itemPrice, vatAmt:itemVat});
   }
   var totalPrice = items.reduce(function(s,it){return s+(it.price||0)+(it.vatAmt||0);},0);
+  var dscC = getDiscount(); if(dscC) totalPrice -= dscC+Math.round(dscC*0.1);
   var data = { chart:info.chart, name:info.name, date:info.date.replace(/\./g,'-'), items:items, totalPrice:totalPrice, source:'treatment' };
   try{ localStorage.setItem('bbaebbae_consent_temp', JSON.stringify(data)); }catch(e){}
   location.href = 'consent.html';
