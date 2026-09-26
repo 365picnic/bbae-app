@@ -1128,18 +1128,18 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
     <div class="item-price">945,000</div>
     <div class="item-note"></div>
   </div>
-  <div class="item" data-price="0" onclick="toggle(this)">
+  <div class="item" data-price="100000" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">실리프팅-채움 (추가)</div></div>
-    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="optChange(this)"><option value="0">선택</option><option value="200000">2줄 추가</option><option value="400000">4줄 추가</option><option value="600000">6줄 추가</option></select></div>
-    <div class="item-price">-</div>
+    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="optChange(this)"><option value="100000">1줄 추가</option><option value="200000">2줄 추가</option><option value="300000">3줄 추가</option><option value="400000">4줄 추가</option><option value="500000">5줄 추가</option><option value="600000">6줄 추가</option><option value="700000">7줄 추가</option><option value="800000">8줄 추가</option><option value="900000">9줄 추가</option><option value="1000000">10줄 추가</option></select></div>
+    <div class="item-price">100,000</div>
     <div class="item-note"></div>
   </div>
-  <div class="item" data-price="0" onclick="toggle(this)">
+  <div class="item" data-price="9000" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">실리프팅-탄력 (추가)</div></div>
-    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="optChange(this)"><option value="0">선택</option><option value="45000">5줄 추가</option><option value="90000">10줄 추가</option><option value="135000">15줄 추가</option><option value="180000">20줄 추가</option></select></div>
-    <div class="item-price">-</div>
+    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="optChange(this)"><option value="9000">1줄 추가</option><option value="18000">2줄 추가</option><option value="27000">3줄 추가</option><option value="36000">4줄 추가</option><option value="45000">5줄 추가</option><option value="54000">6줄 추가</option><option value="63000">7줄 추가</option><option value="72000">8줄 추가</option><option value="81000">9줄 추가</option><option value="90000">10줄 추가</option><option value="99000">11줄 추가</option><option value="108000">12줄 추가</option><option value="117000">13줄 추가</option><option value="126000">14줄 추가</option><option value="135000">15줄 추가</option><option value="144000">16줄 추가</option><option value="153000">17줄 추가</option><option value="162000">18줄 추가</option><option value="171000">19줄 추가</option><option value="180000">20줄 추가</option><option value="189000">21줄 추가</option><option value="198000">22줄 추가</option><option value="207000">23줄 추가</option><option value="216000">24줄 추가</option><option value="225000">25줄 추가</option><option value="234000">26줄 추가</option><option value="243000">27줄 추가</option><option value="252000">28줄 추가</option><option value="261000">29줄 추가</option><option value="270000">30줄 추가</option></select></div>
+    <div class="item-price">9,000</div>
     <div class="item-note"></div>
   </div>
 </div>
@@ -1251,25 +1251,19 @@ window.onload = function(){
 };
 
 function toggle(el){
-  var sl=el.querySelector('select.opt-sel');
-  if(sl){
-    if(el.classList.contains('checked')){sl.value='0';optChange(sl);}
-    else showToast('줄 수를 선택해 주세요');
-    return;
-  }
   el.classList.toggle('checked');
   updateSummary();
 }
 function optChange(sl){
   var el=sl.closest('.item');var v=parseInt(sl.value)||0;
   el.setAttribute('data-price',v);
-  el.querySelector('.item-price').textContent=v?v.toLocaleString():'-';
-  el.classList.toggle('checked',v>0);
+  el.querySelector('.item-price').textContent=v.toLocaleString();
+  el.classList.add('checked');
   updateSummary();
 }
 function resetSelects(){
   var ss=document.querySelectorAll('select.opt-sel');
-  for(var i=0;i<ss.length;i++){ss[i].value='0';var el=ss[i].closest('.item');el.setAttribute('data-price',0);el.querySelector('.item-price').textContent='-';}
+  for(var i=0;i<ss.length;i++){ss[i].selectedIndex=0;var el=ss[i].closest('.item');var v=parseInt(ss[i].value)||0;el.setAttribute('data-price',v);el.querySelector('.item-price').textContent=v.toLocaleString();}
 }
 function cntText(el){
   var c=el.querySelector('.item-count');if(!c)return '';
