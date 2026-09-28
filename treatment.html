@@ -373,7 +373,7 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   <div class="item" data-price="450000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">올리지오X</div></div>
-    <div class="item-count">1회</div>
+    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="oliChange(this)"><option value="450000">1회</option><option value="945000" data-disc="1">3회</option></select></div>
     <div class="item-price">450,000</div>
     <div class="item-note">적정 3회</div>
   </div>
@@ -394,9 +394,9 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   <div class="item" data-price="100000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">실리프팅-탄력</div></div>
-    <div class="item-count">10개당</div>
+    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="optChange(this)"><option value="10000">1줄</option><option value="20000">2줄</option><option value="30000">3줄</option><option value="40000">4줄</option><option value="50000">5줄</option><option value="60000">6줄</option><option value="70000">7줄</option><option value="80000">8줄</option><option value="90000">9줄</option><option value="100000" selected>10줄</option><option value="109000">11줄</option><option value="118000">12줄</option><option value="127000">13줄</option><option value="136000">14줄</option><option value="145000">15줄</option><option value="154000">16줄</option><option value="163000">17줄</option><option value="172000">18줄</option><option value="181000">19줄</option><option value="190000">20줄</option><option value="199000">21줄</option><option value="208000">22줄</option><option value="217000">23줄</option><option value="226000">24줄</option><option value="235000">25줄</option><option value="244000">26줄</option><option value="253000">27줄</option><option value="262000">28줄</option><option value="271000">29줄</option><option value="280000">30줄</option></select></div>
     <div class="item-price">100,000</div>
-    <div class="item-note">1줄 추가 0.9만</div>
+    <div class="item-note"></div>
   </div>
   <div class="item" data-price="0" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
@@ -427,7 +427,7 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   <div class="item" data-price="450000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">올리지오X</div></div>
-    <div class="item-count">1회</div>
+    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="oliChange(this)"><option value="450000">1회</option><option value="945000" data-disc="1">3회</option></select></div>
     <div class="item-price">450,000</div>
     <div class="item-note">300샷 · 적정 3회</div>
   </div>
@@ -438,19 +438,19 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
     <div class="item-price">315,000</div>
     <div class="item-note">총 18만줄</div>
   </div>
-  <div class="item" data-price="420000" data-vat="true" onclick="toggle(this)">
+  <div class="item" data-price="1020000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">실리프팅-채움</div></div>
-    <div class="item-count">4줄</div>
-    <div class="item-price">420,000</div>
-    <div class="item-note">1줄 추가 10만</div>
+    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="optChange(this)"><option value="120000">1줄</option><option value="240000">2줄</option><option value="360000">3줄</option><option value="420000">4줄</option><option value="520000">5줄</option><option value="620000">6줄</option><option value="720000">7줄</option><option value="820000">8줄</option><option value="920000">9줄</option><option value="1020000" selected>10줄</option><option value="1120000">11줄</option><option value="1220000">12줄</option><option value="1320000">13줄</option><option value="1420000">14줄</option><option value="1520000">15줄</option><option value="1620000">16줄</option><option value="1720000">17줄</option><option value="1820000">18줄</option><option value="1920000">19줄</option><option value="2020000">20줄</option><option value="2120000">21줄</option><option value="2220000">22줄</option><option value="2320000">23줄</option><option value="2420000">24줄</option><option value="2520000">25줄</option><option value="2620000">26줄</option><option value="2720000">27줄</option><option value="2820000">28줄</option><option value="2920000">29줄</option><option value="3020000">30줄</option></select></div>
+    <div class="item-price">1,020,000</div>
+    <div class="item-note"></div>
   </div>
   <div class="item" data-price="100000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">실리프팅-탄력</div></div>
-    <div class="item-count">10줄</div>
+    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="optChange(this)"><option value="10000">1줄</option><option value="20000">2줄</option><option value="30000">3줄</option><option value="40000">4줄</option><option value="50000">5줄</option><option value="60000">6줄</option><option value="70000">7줄</option><option value="80000">8줄</option><option value="90000">9줄</option><option value="100000" selected>10줄</option><option value="109000">11줄</option><option value="118000">12줄</option><option value="127000">13줄</option><option value="136000">14줄</option><option value="145000">15줄</option><option value="154000">16줄</option><option value="163000">17줄</option><option value="172000">18줄</option><option value="181000">19줄</option><option value="190000">20줄</option><option value="199000">21줄</option><option value="208000">22줄</option><option value="217000">23줄</option><option value="226000">24줄</option><option value="235000">25줄</option><option value="244000">26줄</option><option value="253000">27줄</option><option value="262000">28줄</option><option value="271000">29줄</option><option value="280000">30줄</option></select></div>
     <div class="item-price">100,000</div>
-    <div class="item-note">1줄 추가 0.9만</div>
+    <div class="item-note"></div>
   </div>
   <div class="item" data-price="300000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
@@ -603,7 +603,7 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   <div class="item" data-price="100000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">실리프팅-탄력</div></div>
-    <div class="item-count">10줄</div>
+    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="optChange(this)"><option value="10000">1줄</option><option value="20000">2줄</option><option value="30000">3줄</option><option value="40000">4줄</option><option value="50000">5줄</option><option value="60000">6줄</option><option value="70000">7줄</option><option value="80000">8줄</option><option value="90000">9줄</option><option value="100000" selected>10줄</option><option value="109000">11줄</option><option value="118000">12줄</option><option value="127000">13줄</option><option value="136000">14줄</option><option value="145000">15줄</option><option value="154000">16줄</option><option value="163000">17줄</option><option value="172000">18줄</option><option value="181000">19줄</option><option value="190000">20줄</option><option value="199000">21줄</option><option value="208000">22줄</option><option value="217000">23줄</option><option value="226000">24줄</option><option value="235000">25줄</option><option value="244000">26줄</option><option value="253000">27줄</option><option value="262000">28줄</option><option value="271000">29줄</option><option value="280000">30줄</option></select></div>
     <div class="item-price">100,000</div>
     <div class="item-note"></div>
   </div>
@@ -657,23 +657,23 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   <div class="item" data-price="450000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">올리지오X</div></div>
-    <div class="item-count">1회</div>
+    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="oliChange(this)"><option value="450000">1회</option><option value="945000" data-disc="1">3회</option></select></div>
     <div class="item-price">450,000</div>
     <div class="item-note">적정 3회</div>
   </div>
-  <div class="item" data-price="420000" data-vat="true" onclick="toggle(this)">
+  <div class="item" data-price="1020000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">실리프팅-채움</div></div>
-    <div class="item-count">4줄</div>
-    <div class="item-price">420,000</div>
-    <div class="item-note">1줄 추가 10만</div>
+    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="optChange(this)"><option value="120000">1줄</option><option value="240000">2줄</option><option value="360000">3줄</option><option value="420000">4줄</option><option value="520000">5줄</option><option value="620000">6줄</option><option value="720000">7줄</option><option value="820000">8줄</option><option value="920000">9줄</option><option value="1020000" selected>10줄</option><option value="1120000">11줄</option><option value="1220000">12줄</option><option value="1320000">13줄</option><option value="1420000">14줄</option><option value="1520000">15줄</option><option value="1620000">16줄</option><option value="1720000">17줄</option><option value="1820000">18줄</option><option value="1920000">19줄</option><option value="2020000">20줄</option><option value="2120000">21줄</option><option value="2220000">22줄</option><option value="2320000">23줄</option><option value="2420000">24줄</option><option value="2520000">25줄</option><option value="2620000">26줄</option><option value="2720000">27줄</option><option value="2820000">28줄</option><option value="2920000">29줄</option><option value="3020000">30줄</option></select></div>
+    <div class="item-price">1,020,000</div>
+    <div class="item-note"></div>
   </div>
   <div class="item" data-price="100000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">실리프팅-탄력</div></div>
-    <div class="item-count">10줄</div>
+    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="optChange(this)"><option value="10000">1줄</option><option value="20000">2줄</option><option value="30000">3줄</option><option value="40000">4줄</option><option value="50000">5줄</option><option value="60000">6줄</option><option value="70000">7줄</option><option value="80000">8줄</option><option value="90000">9줄</option><option value="100000" selected>10줄</option><option value="109000">11줄</option><option value="118000">12줄</option><option value="127000">13줄</option><option value="136000">14줄</option><option value="145000">15줄</option><option value="154000">16줄</option><option value="163000">17줄</option><option value="172000">18줄</option><option value="181000">19줄</option><option value="190000">20줄</option><option value="199000">21줄</option><option value="208000">22줄</option><option value="217000">23줄</option><option value="226000">24줄</option><option value="235000">25줄</option><option value="244000">26줄</option><option value="253000">27줄</option><option value="262000">28줄</option><option value="271000">29줄</option><option value="280000">30줄</option></select></div>
     <div class="item-price">100,000</div>
-    <div class="item-note">1줄 추가 0.9만</div>
+    <div class="item-note"></div>
   </div>
   <div class="item" data-price="300000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
@@ -711,9 +711,9 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   <div class="item" data-price="100000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">실리프팅-탄력</div></div>
-    <div class="item-count">10줄</div>
+    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="optChange(this)"><option value="10000">1줄</option><option value="20000">2줄</option><option value="30000">3줄</option><option value="40000">4줄</option><option value="50000">5줄</option><option value="60000">6줄</option><option value="70000">7줄</option><option value="80000">8줄</option><option value="90000">9줄</option><option value="100000" selected>10줄</option><option value="109000">11줄</option><option value="118000">12줄</option><option value="127000">13줄</option><option value="136000">14줄</option><option value="145000">15줄</option><option value="154000">16줄</option><option value="163000">17줄</option><option value="172000">18줄</option><option value="181000">19줄</option><option value="190000">20줄</option><option value="199000">21줄</option><option value="208000">22줄</option><option value="217000">23줄</option><option value="226000">24줄</option><option value="235000">25줄</option><option value="244000">26줄</option><option value="253000">27줄</option><option value="262000">28줄</option><option value="271000">29줄</option><option value="280000">30줄</option></select></div>
     <div class="item-price">100,000</div>
-    <div class="item-note">1줄 추가 0.9만</div>
+    <div class="item-note"></div>
   </div>
   <div class="item" data-price="630000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
@@ -772,9 +772,9 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   <div class="item" data-price="100000" data-vat="true" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div><div class="item-name">실리프팅-탄력</div></div>
-    <div class="item-count">10줄</div>
+    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="optChange(this)"><option value="10000">1줄</option><option value="20000">2줄</option><option value="30000">3줄</option><option value="40000">4줄</option><option value="50000">5줄</option><option value="60000">6줄</option><option value="70000">7줄</option><option value="80000">8줄</option><option value="90000">9줄</option><option value="100000" selected>10줄</option><option value="109000">11줄</option><option value="118000">12줄</option><option value="127000">13줄</option><option value="136000">14줄</option><option value="145000">15줄</option><option value="154000">16줄</option><option value="163000">17줄</option><option value="172000">18줄</option><option value="181000">19줄</option><option value="190000">20줄</option><option value="199000">21줄</option><option value="208000">22줄</option><option value="217000">23줄</option><option value="226000">24줄</option><option value="235000">25줄</option><option value="244000">26줄</option><option value="253000">27줄</option><option value="262000">28줄</option><option value="271000">29줄</option><option value="280000">30줄</option></select></div>
     <div class="item-price">100,000</div>
-    <div class="item-note">1줄 추가 0.9만</div>
+    <div class="item-note"></div>
   </div>
   <div class="item" data-price="0" onclick="toggle(this)">
     <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
@@ -1118,32 +1118,6 @@ body{zoom:1.2;-moz-transform:scale(1.2);-moz-transform-origin:0 0;}
   </div>
 </div>
 
-<div class="sec-wrap amber-sec">
-  <div class="sec-title"><span class="sec-title-text">추가 항목</span><span class="sec-title-en">ADD-ON OPTIONS</span></div>
-  <div class="col-head"><span></span><span>시술명</span><span>구분</span><span>가격</span><span>비고</span></div>
-  <div class="item" data-price="495000" data-vat="true" onclick="toggle(this)">
-    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">올리지오X</div></div>
-    <div class="item-count">2회 추가</div>
-    <div class="item-price">495,000</div>
-    <div class="item-note"></div>
-  </div>
-  <div class="item" data-price="100000" data-vat="true" onclick="toggle(this)">
-    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">실리프팅-채움 (추가)</div></div>
-    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="optChange(this)"><option value="100000">1줄 추가</option><option value="200000">2줄 추가</option><option value="300000">3줄 추가</option><option value="400000">4줄 추가</option><option value="500000">5줄 추가</option><option value="600000">6줄 추가</option><option value="700000">7줄 추가</option><option value="800000">8줄 추가</option><option value="900000">9줄 추가</option><option value="1000000">10줄 추가</option></select></div>
-    <div class="item-price">100,000</div>
-    <div class="item-note"></div>
-  </div>
-  <div class="item" data-price="9000" data-vat="true" onclick="toggle(this)">
-    <div class="cb"><svg class="cb-svg" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5.5,10.5 11,2.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div><div class="item-name">실리프팅-탄력 (추가)</div></div>
-    <div class="item-count"><select class="opt-sel" onclick="event.stopPropagation()" onchange="optChange(this)"><option value="9000">1줄 추가</option><option value="18000">2줄 추가</option><option value="27000">3줄 추가</option><option value="36000">4줄 추가</option><option value="45000">5줄 추가</option><option value="54000">6줄 추가</option><option value="63000">7줄 추가</option><option value="72000">8줄 추가</option><option value="81000">9줄 추가</option><option value="90000">10줄 추가</option><option value="99000">11줄 추가</option><option value="108000">12줄 추가</option><option value="117000">13줄 추가</option><option value="126000">14줄 추가</option><option value="135000">15줄 추가</option><option value="144000">16줄 추가</option><option value="153000">17줄 추가</option><option value="162000">18줄 추가</option><option value="171000">19줄 추가</option><option value="180000">20줄 추가</option><option value="189000">21줄 추가</option><option value="198000">22줄 추가</option><option value="207000">23줄 추가</option><option value="216000">24줄 추가</option><option value="225000">25줄 추가</option><option value="234000">26줄 추가</option><option value="243000">27줄 추가</option><option value="252000">28줄 추가</option><option value="261000">29줄 추가</option><option value="270000">30줄 추가</option></select></div>
-    <div class="item-price">9,000</div>
-    <div class="item-note"></div>
-  </div>
-</div>
-
 </div>
 
 <!-- 안내 -->
@@ -1262,9 +1236,29 @@ function optChange(sl){
   el.classList.add('checked');
   updateSummary();
 }
+function oliChange(sl){
+  var el=sl.closest('.item');var opt=sl.options[sl.selectedIndex];var v=parseInt(opt.value)||0;
+  el.setAttribute('data-price',v);
+  el.querySelector('.item-price').textContent=v.toLocaleString();
+  var nm=el.querySelector('.item-name');
+  var disc=nm.querySelector('.item-disc');
+  if(opt.getAttribute('data-disc')==='1'){
+    if(!disc){disc=document.createElement('span');disc.className='item-disc';nm.appendChild(disc);}
+    disc.textContent='30% 할인';
+  } else if(disc){
+    nm.removeChild(disc);
+  }
+  el.classList.add('checked');
+  updateSummary();
+}
 function resetSelects(){
   var ss=document.querySelectorAll('select.opt-sel');
-  for(var i=0;i<ss.length;i++){ss[i].selectedIndex=0;var el=ss[i].closest('.item');var v=parseInt(ss[i].value)||0;el.setAttribute('data-price',v);el.querySelector('.item-price').textContent=v.toLocaleString();}
+  for(var i=0;i<ss.length;i++){
+    ss[i].selectedIndex=0;var el=ss[i].closest('.item');var v=parseInt(ss[i].value)||0;
+    el.setAttribute('data-price',v);el.querySelector('.item-price').textContent=v.toLocaleString();
+    var nm=el.querySelector('.item-name');var disc=nm?nm.querySelector('.item-disc'):null;
+    if(disc)nm.removeChild(disc);
+  }
 }
 function cntText(el){
   var c=el.querySelector('.item-count');if(!c)return '';
